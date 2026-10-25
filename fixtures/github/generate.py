@@ -274,6 +274,29 @@ def contents(path: str, text: str) -> dict:
     }
 
 
+def webhooks(repo: dict) -> dict:
+    """Signed-delivery payloads for QA-WH-* (only the fields GitMedic reads)."""
+    opened = issue(500, "Exporting to PDF crashes the app", "Clicking export PDF crashes.",
+                   [], "open", datetime(2026, 10, 20, tzinfo=UTC), None, 0, "erin")
+    pr = {
+        "id": 700500, "number": 501, "title": "Add PDF export retry", "state": "open",
+        "user": {"login": "erin"}, "html_url": f"{WEB}/pull/501",
+        "created_at": "2026-10-20T10:00:00Z", "updated_at": "2026-10-20T10:00:00Z",
+        "closed_at": None, "merged_at": None, "additions": 120, "deletions": 4,
+        "changed_files": 3,
+    }
+    commit = {
+        "id": "f" * 40, "timestamp": "2026-10-20T11:00:00Z", "message": "Fix export",
+        "author": {"name": "Erin", "email": "erin@example.com", "username": "erin"},
+    }
+    return {
+        "webhook_issues_opened.json": {"action": "opened", "issue": opened, "repository": repo},
+        "webhook_pull_request_opened.json": {"action": "opened", "number": 501,
+                                             "pull_request": pr, "repository": repo},
+        "webhook_push.json": {"ref": "refs/heads/main", "commits": [commit], "repository": repo},
+    }
+
+
 def main() -> None:
     issues, pairs = build_issues()
     pulls, details, reviews, feed_items = build_pulls()
@@ -297,6 +320,7 @@ def main() -> None:
         "readme.json": contents("README.md", DOCS["README.md"]),
         "tree.json": tree,
         "contents.json": {p: contents(p, t) for p, t in DOCS.items()},
+        **webhooks(repo),
     }
     for name, data in files.items():
         (OUT / name).write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n",

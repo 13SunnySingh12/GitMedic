@@ -259,7 +259,7 @@ public class SyncService {
   }
 
   /** BR-13: README plus docs/**.md, at most 50 files of ≤ 200 KB each. */
-  List<Document> fetchDocs(String token, Repo repo, String branch) {
+  public List<Document> fetchDocs(String token, Repo repo, String branch) {
     List<Document> docs = new ArrayList<>();
     try {
       JsonNode readme = github.get(token, github.repoUri(repo.fullName(), "/readme", Map.of()));

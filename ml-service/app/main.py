@@ -14,7 +14,8 @@ from fastapi.responses import JSONResponse
 from app.api.routes import router
 from app.core import errors
 from app.core.config import get_settings
-from app.db import pool
+from app.db import pool, queries
+from app.ml import store
 from app.rag import embedder
 
 MAX_BODY = 2 * 1024 * 1024
@@ -41,6 +42,12 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
     settings.model_dir.mkdir(parents=True, exist_ok=True)
     pool.open_pool(settings.ml_db_dsn)
+    try:
+        removed = store.sweep_orphans(settings.model_dir, queries.repo_ids())
+        if removed:
+            log.info("Removed model files of untracked repos %s", removed)
+    except Exception:
+        log.warning("Skipped orphan model sweep: database unavailable")
     yield
     pool.close_pool()
 

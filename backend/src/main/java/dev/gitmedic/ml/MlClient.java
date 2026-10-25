@@ -137,7 +137,12 @@ public class MlClient {
         (req, res) -> {
           int status = res.getStatusCode().value();
           byte[] bytes = res.getBody().readAllBytes();
-          JsonNode json = bytes.length == 0 ? mapper.createObjectNode() : mapper.readTree(bytes);
+          JsonNode json;
+          try {
+            json = bytes.length == 0 ? mapper.createObjectNode() : mapper.readTree(bytes);
+          } catch (tools.jackson.core.JacksonException e) {
+            return fail("ML service answered " + status + " with a non-JSON body");
+          }
           if (status >= 500) {
             return fail("ML service answered " + status);
           }

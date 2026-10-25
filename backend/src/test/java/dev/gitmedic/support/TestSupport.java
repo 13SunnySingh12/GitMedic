@@ -174,6 +174,13 @@ public final class TestSupport {
                     "{\"score\":42,\"level\":\"MEDIUM\",\"components\":{\"days_since_commit\":0.1,"
                         + "\"open_issue_growth\":0.5,\"unanswered_rate\":0.6,\"contributor_dropoff\":0.2}}")));
     ml.stubFor(
+        WireMock.get(urlPathMatching("/internal/v1/repos/\\d+/models"))
+            .willReturn(
+                WireMock.okJson(
+                    "{\"label\":null,\"label_data\":{\"have\":0,\"need\":30,\"ready\":false},"
+                        + "\"merge_time\":null,\"merge_time_data\":{\"have\":0,\"need\":20,"
+                        + "\"ready\":false},\"chunks\":0}")));
+    ml.stubFor(
         WireMock.delete(urlPathMatching("/internal/v1/repos/\\d+"))
             .willReturn(aResponse().withStatus(204)));
   }

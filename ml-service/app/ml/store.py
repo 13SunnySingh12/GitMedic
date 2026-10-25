@@ -66,3 +66,16 @@ def delete_repo(model_dir: Path, repo_id: int) -> None:
         if p.parent == d:
             del _cache[p]
     shutil.rmtree(d, ignore_errors=True)
+
+
+def sweep_orphans(model_dir: Path, live_repo_ids: set[int]) -> list[int]:
+    """Removes model folders of repos untracked while this service was down (SEC-21)."""
+    removed: list[int] = []
+    root = model_dir.resolve()
+    if not root.is_dir():
+        return removed
+    for d in root.iterdir():
+        if d.is_dir() and d.name.isdigit() and int(d.name) not in live_repo_ids:
+            delete_repo(model_dir, int(d.name))
+            removed.append(int(d.name))
+    return removed

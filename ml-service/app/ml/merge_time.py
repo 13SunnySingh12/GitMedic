@@ -42,6 +42,10 @@ def build_dataset(rows: list[dict]) -> tuple[list[list[float]], list[float], flo
     return x, y, global_median
 
 
+def readiness(n_merged: int) -> dict:
+    return {"have": n_merged, "need": MIN_SAMPLES, "ready": n_merged >= MIN_SAMPLES}
+
+
 def features(pr: dict, author_prior: int, author_median: float) -> list[float]:
     return [
         pr["additions"],
