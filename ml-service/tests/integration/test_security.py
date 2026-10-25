@@ -7,6 +7,17 @@ from app.ml.store import repo_dir
 from tests.conftest import TEST_DSN
 
 
+def test_requests_log_at_info_with_request_id(client, caplog):
+    """Regression: INFO request logging used to raise KeyError (request_id set twice)."""
+    import logging
+
+    caplog.set_level(logging.INFO, logger="gitmedic.ml")
+    r = client.get("/health", headers={"X-Request-Id": "abc-123"})
+    assert r.status_code == 200
+    assert r.headers["X-Request-Id"] == "abc-123"
+    assert any("GET /health -> 200" in m for m in caplog.messages)
+
+
 def test_health_needs_no_token(client):
     r = client.get("/health", headers={"X-Internal-Token": ""})
     assert r.status_code == 200

@@ -38,7 +38,8 @@ class ReportController {
       Instant periodEnd,
       Instant generatedAt,
       Integer riskScore,
-      String riskLevel) {}
+      String riskLevel,
+      String timezone) {}
 
   record GenerateRequest(String period) {}
 
@@ -87,7 +88,8 @@ class ReportController {
         jdbc.sql(
                 """
                 select id, period_start, period_end, generated_at,
-                  (metrics -> 'risk' ->> 'score')::int score, metrics -> 'risk' ->> 'level' level
+                  (metrics -> 'risk' ->> 'score')::int score, metrics -> 'risk' ->> 'level' level,
+                  metrics ->> 'timezone' tz
                 from gitmedic.weekly_reports where repo_id = ?
                 order by period_start desc limit ? offset ?
                 """)
@@ -100,7 +102,8 @@ class ReportController {
                         rs.getTimestamp("period_end").toInstant(),
                         rs.getTimestamp("generated_at").toInstant(),
                         (Integer) rs.getObject("score"),
-                        rs.getString("level")))
+                        rs.getString("level"),
+                        rs.getString("tz")))
             .list();
     return paging.page(items, total);
   }
@@ -189,6 +192,7 @@ class ReportController {
     out.put("periodStart", r.start());
     out.put("periodEnd", r.end());
     out.put("generatedAt", r.generatedAt());
+    out.put("timezone", r.metrics().path("timezone").asString("UTC"));
     out.put("metrics", r.metrics());
     out.put("markdown", ReportRenderer.markdown(r.fullName(), r.metrics()));
     return out;

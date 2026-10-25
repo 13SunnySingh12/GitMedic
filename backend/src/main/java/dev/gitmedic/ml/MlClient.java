@@ -9,6 +9,7 @@ import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
@@ -79,7 +80,8 @@ public class MlClient {
     return builder
         .clone()
         .baseUrl(props.mlBaseUrl())
-        .requestFactory(factory)
+        // Buffered so every body carries Content-Length (FastAPI rejects unsized bodies, §7.3).
+        .requestFactory(new BufferingClientHttpRequestFactory(factory))
         .defaultHeader("X-Internal-Token", props.internalApiToken())
         .build();
   }

@@ -25,7 +25,7 @@ class ConfigFailFastTest {
           .withInitializer(new ConfigDataApplicationContextInitializer())
           .withUserConfiguration(Props.class)
           .withPropertyValues(
-              "spring.config.import=optional:file:does-not-exist.env[.properties]",
+              "GITMEDIC_ENV_FILE=does-not-exist.env",
               "FRONTEND_ORIGIN=http://localhost:5173",
               "TOKEN_ENCRYPTION_KEY=AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
               "ML_BASE_URL=http://127.0.0.1:8000",

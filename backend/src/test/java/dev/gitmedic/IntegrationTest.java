@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 /** Full context against a disposable pgvector Postgres (Testcontainers), MockMvc wired. */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@SpringBootTest
+@SpringBootTest(properties = "GITMEDIC_ENV_FILE=does-not-exist.env") // never read a dev .env
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Import(TestcontainersConfiguration.class)

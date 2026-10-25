@@ -123,7 +123,10 @@ class ApiIntegrationTest {
     await(
         () -> !ml.findAll(postRequestedFor(urlPathEqualTo("/internal/v1/duplicates"))).isEmpty(),
         "duplicate check after webhook");
-    ml.verify(postRequestedFor(urlPathEqualTo("/internal/v1/index")));
+    // FastAPI requires a declared Content-Length (chunked bodies are rejected with 413).
+    ml.verify(
+        postRequestedFor(urlPathEqualTo("/internal/v1/index"))
+            .withHeader("Content-Length", WireMock.matching("[1-9][0-9]*")));
   }
 
   @Test

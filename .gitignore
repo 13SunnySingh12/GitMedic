@@ -28,3 +28,6 @@ graphify-out/
 *.iml
 *.log
 .DS_Store
+
+# Machine-specific local launcher
+.claude/launch.json
