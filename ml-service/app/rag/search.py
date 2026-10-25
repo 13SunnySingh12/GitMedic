@@ -1,6 +1,7 @@
 """FR-015/016/017: idempotent pgvector indexing, duplicate search, retrieval-only answer sources."""
 
 import hashlib
+import re
 
 from app.db.pool import connection, one, vector_literal
 from app.rag.chunking import chunk, heading_anchor
@@ -130,11 +131,19 @@ def answer_sources(
                 "type": "issue" if r["source_type"] == "issue" else "doc",
                 "ref": ref,
                 "url": url,
-                "snippet": r["content"][:SNIPPET_CHARS],
+                "snippet": readable(r["content"])[:SNIPPET_CHARS],
                 "score": float(r["score"]),
             }
         )
     return sources
+
+
+def readable(chunk_text: str) -> str:
+    """A leading Markdown heading becomes a plain label: '## Saving' + text -> 'Saving: text'."""
+    first, _, rest = chunk_text.partition("\n")
+    if re.match(r"^#{1,6}\s", first):
+        return f"{first.lstrip('#').strip()}: {' '.join(rest.split())}"
+    return " ".join(chunk_text.split())
 
 
 def retrieval_draft(sources: list[dict]) -> str:

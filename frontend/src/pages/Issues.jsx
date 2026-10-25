@@ -1,0 +1,136 @@
+import { Link, useParams, useSearchParams } from 'react-router';
+import { useDashboard, useIssues } from '../api/hooks.js';
+import { RepoNav } from '../components/Layout.jsx';
+import { Pagination } from '../components/Pagination.jsx';
+import { Prediction, QueryState } from '../components/Status.jsx';
+import { date } from '../utils/format.js';
+
+/** Filters live in the URL (FR-025 / UX-07) so views are shareable and survive reloads. */
+export default function Issues() {
+  const { repoId } = useParams();
+  const [params, setParams] = useSearchParams();
+  const state = params.get('state') ?? 'open';
+  const label = params.get('label') ?? '';
+  const duplicate = params.get('duplicate') === 'true';
+  const page = Math.max(0, Number(params.get('page') ?? 0) || 0);
+  const issues = useIssues(repoId, {
+    state,
+    label,
+    duplicate: duplicate ? 'true' : undefined,
+    page,
+    size: 25,
+  });
+  const dashboard = useDashboard(repoId);
+
+  function set(key, value) {
+    const next = new URLSearchParams(params);
+    if (value === '' || value === undefined || value === null) next.delete(key);
+    else next.set(key, String(value));
+    if (key !== 'page') next.delete('page');
+    setParams(next, { replace: key !== 'page' });
+  }
+
+  const labelModel = dashboard.data?.models?.label;
+
+  return (
+    <>
+      <div className="page-head">
+        <h1>Issues</h1>
+      </div>
+      <RepoNav />
+      {dashboard.data?.mlStatus === 'UNAVAILABLE' && (
+        <p className="notice notice-warn" style={{ marginBottom: 16 }}>
+          The ML service is unavailable. Labels and duplicate flags may be out of date.
+        </p>
+      )}
+      {labelModel && !labelModel.trained && (
+        <p className="notice" style={{ marginBottom: 16 }}>
+          Predicted labels appear once the label model is trained.{' '}
+          <Link to={`/repos/${repoId}`}>Open model status on the dashboard</Link>
+        </p>
+      )}
+      <form className="filters" onSubmit={(e) => e.preventDefault()} aria-label="Issue filters">
+        <div className="field">
+          <label htmlFor="f-state">State</label>
+          <select id="f-state" value={state} onChange={(e) => set('state', e.target.value)}>
+            <option value="open">Open</option>
+            <option value="closed">Closed</option>
+            <option value="all">All</option>
+          </select>
+        </div>
+        <div className="field">
+          <label htmlFor="f-label">Predicted label</label>
+          <select id="f-label" value={label} onChange={(e) => set('label', e.target.value)}>
+            <option value="">Any</option>
+            <option value="bug">bug</option>
+            <option value="feature">feature</option>
+            <option value="question">question</option>
+          </select>
+        </div>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={duplicate}
+            onChange={(e) => set('duplicate', e.target.checked ? 'true' : '')}
+          />
+          Possible duplicates only
+        </label>
+      </form>
+      <QueryState
+        query={issues}
+        skeleton={300}
+        isEmpty={(d) => d.totalItems === 0}
+        empty="No issues match these filters."
+      >
+        {(data) => (
+          <>
+            <div className="table-wrap">
+              <table className="stacked">
+                <caption className="visually-hidden">Issues</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" className="num">
+                      #
+                    </th>
+                    <th scope="col">Title</th>
+                    <th scope="col">State</th>
+                    <th scope="col">Label</th>
+                    <th scope="col">Duplicate</th>
+                    <th scope="col">Opened</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.items.map((i) => (
+                    <tr key={i.number}>
+                      <td data-label="#" className="num">
+                        {i.number}
+                      </td>
+                      <td className="title-cell">
+                        <Link to={`/repos/${repoId}/issues/${i.number}`}>{i.title}</Link>
+                      </td>
+                      <td data-label="State">{i.state}</td>
+                      <td data-label="Label">
+                        <Prediction label={i.predictedLabel} confidence={i.predictedConfidence} />
+                      </td>
+                      <td data-label="Duplicate">
+                        {i.isPossibleDuplicate ? (
+                          <span className="badge badge-medium">
+                            Possible duplicate · {i.duplicateScore.toFixed(2)}
+                          </span>
+                        ) : (
+                          <span className="muted">No</span>
+                        )}
+                      </td>
+                      <td data-label="Opened">{date(i.createdAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <Pagination {...data} onPage={(p) => set('page', p)} label={['issue', 'issues']} />
+          </>
+        )}
+      </QueryState>
+    </>
+  );
+}

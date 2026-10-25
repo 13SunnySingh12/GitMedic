@@ -30,7 +30,14 @@ def test_qa_ml_01_label_classifier_trains_and_predicts(client, db):
 
     status = client.get(f"/internal/v1/repos/{repo}/models").json()
     assert status["label"]["n_samples"] == 70
+    assert status["label_data"] == {
+        "have": 70,
+        "need": 30,
+        "class_counts": {"bug": 30, "feature": 22, "question": 18},
+        "ready": True,
+    }
     assert status["merge_time"] is None
+    assert status["merge_time_data"] == {"have": 0, "need": 20, "ready": False}
 
 
 def test_qa_ml_02_insufficient_label_data(client, db):
@@ -155,3 +162,19 @@ def test_ml_10_delete_repo_removes_models_and_embeddings(client, db):
     assert not (get_settings().model_dir.resolve() / str(repo)).exists()
     n = db.execute("select count(*) from gitmedic.embeddings where repo_id = %s", (repo,))
     assert n.fetchone()[0] == 0
+
+
+def test_orphan_model_dirs_are_swept_on_startup(db):
+    from fastapi.testclient import TestClient
+
+    from app.core.config import get_settings
+    from app.main import app
+
+    repo = make_repo(db)
+    root = get_settings().model_dir.resolve()
+    (root / str(repo)).mkdir(parents=True, exist_ok=True)
+    (root / "999999").mkdir(parents=True, exist_ok=True)
+    with TestClient(app):
+        pass
+    assert (root / str(repo)).exists()
+    assert not (root / "999999").exists()

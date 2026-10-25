@@ -6,6 +6,11 @@ from app.db.pool import connection, one
 from app.ml.risk import Facts
 
 
+def repo_ids() -> set[int]:
+    with connection() as c:
+        return {r["id"] for r in c.execute("select id from gitmedic.repos").fetchall()}
+
+
 def labelled_issues(repo_id: int) -> list[dict]:
     with connection() as c:
         return c.execute(

@@ -762,6 +762,7 @@ All require `X-Internal-Token`; bound to `127.0.0.1`; request body ≤ 2 MB.
 | ML-08 | POST `/internal/v1/duplicates` | `{repo_id, issue_number, title, body, top_k?}` | `{matches:[{issue_number,score}], is_possible_duplicate, top_score}` |
 | ML-09 | POST `/internal/v1/suggest` | `{repo_id, issue_number, title, body, use_llm}` | `{sources:[…], draft, mode, llm_status}` |
 | ML-10 | DELETE `/internal/v1/repos/{repo_id}` | — | 204 (models + embeddings removed) |
+| ML-11 | GET `/internal/v1/repos/{repo_id}/models` (added v1.1.0) | — | `{label, label_data:{have,need,class_counts,ready}, merge_time, merge_time_data:{have,need,ready}, chunks}`; `label`/`merge_time` = stored meta or null. Feeds the dashboard model panel (FR-026) without duplicating the BR-04 alias map in Spring |
 
 Pydantic models validate all fields (types, lengths, `top_k` 1–20, `source_type` enum).
 
@@ -933,7 +934,7 @@ Tests: smoke tests per service.
 |---|---|---|---|---|
 | T-2.1 | Supabase project + roles (`gitmedic_app`, `gitmedic_ml`); Docker pgvector fallback | T-1.2 | P0 | Both reachable |
 | T-2.2 | Flyway V1/V2: extension, schema, DS-001…DS-008, RLS, grants | T-2.1 | P0 | Migrations apply on Supabase + Testcontainers |
-| T-2.3 | JPA entities/repositories; psycopg pool in FastAPI | T-2.2 | P0 | Integration test reads/writes |
+| T-2.3 | Spring `JdbcClient` repositories (v1.1.0: replaces JPA, see §12.6); psycopg pool in FastAPI | T-2.2 | P0 | Integration test reads/writes |
 | T-2.4 | Fixtures `fixtures/github/` + `seed` profile | T-2.3 | P0 | Seeded DB renders data |
 Tests: QA-SEC-14, migration test.
 
@@ -1216,6 +1217,35 @@ A-1 Personas (§1.2) · A-2 Supabase Free lacks guaranteed backups · A-3 Supaba
 | Gemini: free tier per project per model; Pro off free tier since 2026-04 | ai.google.dev + secondary source | Partially verified |
 | Spring Boot 4.x current; 3.5 OSS ended 2026-06-30; 4.0 OSS ends 2026-12-31 | secondary sources | Verify on spring.io |
 | `gh webhook forward` for local testing | docs.github.com webhooks | Verified |
+| Spring Boot 4.1.2 current; starter names `spring-boot-starter-webmvc`, `-flyway`, `-security-oauth2-client`, `-restclient` (A-6) | Maven Central + start.spring.io, 2026-10-25 | Verified |
+| `pgvector/pgvector:pg17` matches Supabase PG 17.11 (A-7); pgvector 0.8.2 available on Supabase | Supabase project inspection (read-only), 2026-10-25 | Verified |
+| `gh webhook forward` supports `--secret`/`-S` (TBD-13) | github.com/cli/gh-webhook `webhook/forward.go` | Verified (source) |
+
+### 12.6 Decisions and Change History
+
+**Decisions taken during implementation (v1.1.0)**
+| ID | Decision | Evidence / reason |
+|---|---|---|
+| TBD-01 | Supabase confirmed; Docker `pgvector:pg17` on host port 5433 as local fallback | Supabase project exists (PG 17); port 5432 often taken locally |
+| TBD-02 | Public repos by default (`read:user`); private repos opt-in via `GITHUB_SCOPES=read:user,repo` | Least privilege; documented in README |
+| TBD-03 | Keep 0.80. Measured on fixtures with real MiniLM: recall@5 20/20; flag precision/recall 0.76/0.65 at 0.80, 0.62/0.80 at 0.75, 1.00/0.35 at 0.85 | Synthetic fixtures include templated near-duplicates; re-tune on a real repo |
+| TBD-04 | `help wanted` maps to no class (a call for contributors, not a question); classes with < 5 examples are dropped before training | QA unit tests on alias map |
+| TBD-06 | Weights/formulas as in BR-05, round half up | QA-ML-06 (7 hand-computed cases) |
+| TBD-07 | FastAPI returns predictions, Spring writes them; `gitmedic_ml` = SELECT on issues/PRs/commits/repo_health, `repos(id)` only, RW on embeddings | Verified with role tests (QA-SEC-14) |
+| TBD-08 | Roles via `backend/db/setup-roles.sql` (run once as `postgres`, passwords as psql variables). Supabase's `postgres` is not a superuser and cannot create a schema owned by `gitmedic_app`, so schema `gitmedic` stays `postgres`-owned and `gitmedic_app` gets USAGE+CREATE WITH GRANT OPTION (it owns every table). Flyway V2 adds RLS + `gitmedic_ml` grants/policies when the role exists | On project `oprhaxxbwucybsynwysy` (2026-10-25): roles, schema and `vector` 0.8.2 applied without passwords; `anon`/`authenticated`/`service_role`/`authenticator` have no usage on `gitmedic`; security advisor clean; Data API exposed schemas unset (defaults, `gitmedic` not included). after the owner set the role passwords, Flyway applied V1+V2 as `gitmedic_app` via the session pooler (8 tables owned by `gitmedic_app`, RLS on, 26 indexes incl. HNSW, 6 `gitmedic_ml` policies) and a restart reports the schema up to date; `gitmedic_ml` privileges match §6.4 on the real project |
+| TBD-09 | UTC, `0 0 6 * * MON` | Defaults; configurable |
+| TBD-10 | No commits → s₁ = 1; no contributors in the previous 90 days → s₄ = 0 (nobody can drop off). An empty repo scores 35 (MEDIUM) | QA-ML-06 |
+| TBD-11 | Playwright stays P2 and out of CI | §9.1 |
+| TBD-12 | Calm clinical direction documented in `frontend/README.md` | axe: 0 violations, light and dark, 1280 and 360 px |
+| TBD-13 | `gh webhook forward --secret <GITHUB_WEBHOOK_SECRET>` | Source of cli/gh-webhook |
+| TBD-14 | BR-13 values kept | — |
+| TBD-05, TBD-15 | Open: Groq terms not verified, so FR-018 (P2) stays disabled; GitMedic's GitHub remote and visibility not chosen yet | Need the owner's decision |
+
+**Change History**
+| Version | Date | Change |
+|---|---|---|
+| 1.0.0 | 2026-10 | Initial specification |
+| 1.1.0 | 2026-10-25 | Added ML-11 (model status + training readiness). Spring data access uses `JdbcClient` instead of JPA: natural-key upserts (`ON CONFLICT`), `text[]`, `jsonb` and `vector` columns are plain SQL. Report "Generate now" accepts `{"period":"current"|"previous"}` (default current) and regenerating a period replaces it. Risk history rows are keyed by the as-of time. Dev-only `seed` profile. `GITMEDIC_ENV_FILE` selects the backend env file (default `.env`). TBD resolutions above |
 
 ---
 
@@ -1231,12 +1261,16 @@ A-1 Personas (§1.2) · A-2 Supabase Free lacks guaranteed backups · A-3 Supaba
 - [x] No visual style imposed; functional UI/a11y requirements kept.
 - [x] Confirmed / Proposed / Assumption / TBD / OOS labels applied.
 
-**Not yet verified (requires implementation evidence)**
-- [ ] Any test in §9 executed — none executed at v1.0.0.
-- [ ] Security controls SEC-01…SEC-22 verified.
-- [ ] CI workflow green.
-- [ ] Performance targets (NFR-003).
+**Implementation evidence (v1.1.0, local runs on 2026-10-25; not yet CI)**
+- [x] Tests executed locally: backend `./mvnw verify` 56/56 (Testcontainers pgvector:pg17 + WireMock), ML `pytest -m "not model"` 52/52, ML `pytest -m model` 1/1 (QA-ML-04 recall@5 = 20/20), frontend Vitest 21/21; lint/format/type checks clean in all three services.
+- [x] QA cases covered by those tests: QA-AUTH-01..03, QA-SYNC-01..05, QA-WH-01/02, QA-ML-01..08, QA-RAG-01/02, QA-RPT-01..04, QA-RES-01, QA-UI-01/02, QA-CFG-01, QA-VAL-*, QA-SEC-01/03/04/05/06/07/09/11/13/14/15 (QA-SEC-14 also checked on the Supabase project with the real roles).
+- [x] End-to-end local run with the `seed` profile: real migrations as `gitmedic_app`, real ML pipeline (label macro-F1 0.80 on 70 samples, merge-time MAE 0.9 days), duplicates, suggested answers, reports and downloads verified in the browser and over HTTP.
+- [x] Accessibility: axe-core 0 violations on all 9 routes, light and dark, 1280 and 360 px; no page-level horizontal scroll at 360 px.
+- [ ] Security controls SEC-01…SEC-22. Tested: SEC-01–08, 10, 12–16, 21 (SEC-15 also on the Supabase project: no `anon`/`authenticated` access, security advisor clean apart from the intended deny-by-default INFO on `users` and `weekly_reports`). Not separately tested: SEC-09 (parameterized SQL by construction, whitelisted sort keys tested), SEC-11 (Spring has no CORS configuration; ML no-CORS tested), SEC-19 (generic problem bodies; no dedicated log-redaction test). Not applicable while the LLM is disabled: SEC-17/18. Pending: SEC-20 (CI security job), SEC-22 (manual scope review).
+- [ ] CI workflow green (needs a GitHub remote; TBD-15).
+- [ ] Performance targets (NFR-003, QA-PERF-01) not measured.
+- [ ] Real GitHub OAuth login and sync (needs the owner's OAuth App); T-9.2.
 
-**Decisions still TBD:** TBD-01 … TBD-15 (§12.4); P0-blocking: TBD-01, TBD-02, TBD-08.
+**Decisions still TBD:** TBD-05, TBD-15 (§12.6). No open TBD blocks a P0/P1 requirement; TBD-02/08 are resolved in design and await the owner's Supabase/OAuth setup.
 
 **External details still to verify:** Groq model/limits/terms (TBD-05), Gemini free-tier terms, Spring Boot 4.1 module names (A-6), Supabase connection/backup specifics (A-2, A-3), GitHub rate-limit/ETag behaviour (A-4), pinned action/image versions.

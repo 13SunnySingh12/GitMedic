@@ -40,3 +40,12 @@ def test_alias_map_and_exclusions():
 def test_classifier_text_is_capped():
     assert len(text_of("t", "b" * 10_000)) == MAX_CHARS
     assert text_of("only title", None) == "only title\n"
+
+
+def test_snippets_turn_a_leading_heading_into_a_label():
+    from app.rag.search import readable
+
+    assert (
+        readable("## Saving\n\nIf saving fails,\nupgrade.") == "Saving: If saving fails, upgrade."
+    )
+    assert readable("plain  text\nhere") == "plain text here"

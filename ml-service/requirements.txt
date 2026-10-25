@@ -10,3 +10,5 @@ scikit-learn==1.9.1
 joblib==1.6.0
 sentence-transformers==6.2.0
 httpx==0.28.1
+# Transitive (torch, huggingface-hub): floor for CVE-2026-112907/112913/112940.
+filelock==4.2.4

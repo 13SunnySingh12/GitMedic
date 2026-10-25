@@ -89,10 +89,12 @@ def suggest(req: SuggestRequest, embedder: EmbedderDep) -> dict:
 
 @router.get("/repos/{repo_id}/models")
 def model_status(repo_id: RepoPath, settings: SettingsDep) -> dict:
-    """ML-11 (added in spec v1.1.0): model metadata for the dashboard's model-status panel."""
+    """ML-11 (added in spec v1.1.0): model metadata + training readiness for the dashboard."""
     return {
         "label": store.meta(settings.model_dir, repo_id, label_classifier.NAME),
+        "label_data": label_classifier.readiness(queries.labelled_issues(repo_id)),
         "merge_time": store.meta(settings.model_dir, repo_id, merge_time.NAME),
+        "merge_time_data": merge_time.readiness(len(queries.merged_prs(repo_id))),
         "chunks": search.chunk_count(repo_id),
     }
 

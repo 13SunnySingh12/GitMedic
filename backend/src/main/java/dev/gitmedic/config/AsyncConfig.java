@@ -1,5 +1,6 @@
 package dev.gitmedic.config;
 
+import java.time.Clock;
 import java.util.Map;
 import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,12 @@ import org.springframework.core.task.TaskDecorator;
 
 @Configuration
 class AsyncConfig {
+
+  /** Injected wherever "now" matters, so tests can control time (e.g. rate-limit resets). */
+  @Bean
+  Clock clock() {
+    return Clock.systemUTC();
+  }
 
   /** Carries the request id into @Async jobs (picked up by Boot's task executor auto-config). */
   @Bean

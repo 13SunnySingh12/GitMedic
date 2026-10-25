@@ -1,0 +1,27 @@
+{
+ "ref": "refs/heads/main",
+ "commits": [
+  {
+   "id": "ffffffffffffffffffffffffffffffffffffffff",
+   "timestamp": "2026-10-20T11:00:00Z",
+   "message": "Fix export",
+   "author": {
+    "name": "Erin",
+    "email": "erin@example.com",
+    "username": "erin"
+   }
+  }
+ ],
+ "repository": {
+  "id": 123456,
+  "full_name": "octo/demo",
+  "name": "demo",
+  "owner": {
+   "login": "octo"
+  },
+  "private": false,
+  "default_branch": "main",
+  "html_url": "https://github.com/octo/demo",
+  "description": "Synthetic fixture repository"
+ }
+}

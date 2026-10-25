@@ -1,0 +1,31 @@
+{
+ "action": "opened",
+ "issue": {
+  "id": 900500,
+  "number": 500,
+  "title": "Exporting to PDF crashes the app",
+  "body": "Clicking export PDF crashes.",
+  "state": "open",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/500",
+  "created_at": "2026-10-20T00:00:00Z",
+  "updated_at": "2026-10-25T20:00:00Z",
+  "closed_at": null
+ },
+ "repository": {
+  "id": 123456,
+  "full_name": "octo/demo",
+  "name": "demo",
+  "owner": {
+   "login": "octo"
+  },
+  "private": false,
+  "default_branch": "main",
+  "html_url": "https://github.com/octo/demo",
+  "description": "Synthetic fixture repository"
+ }
+}

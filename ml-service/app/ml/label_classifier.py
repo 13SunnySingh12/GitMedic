@@ -54,6 +54,14 @@ def build_dataset(rows: list[dict]) -> tuple[list[str], list[str]]:
     return [t for t, _ in pairs], [c for _, c in pairs]
 
 
+def readiness(rows: list[dict]) -> dict:
+    """How close the repo is to BR-07, for the dashboard's model-status panel."""
+    counts = Counter(c for r in rows if (c := class_of(r["gh_labels"])))
+    usable = sum(n for n in counts.values() if n >= MIN_PER_CLASS)
+    ready = usable >= MIN_SAMPLES and sum(n >= MIN_PER_CLASS for n in counts.values()) >= 2
+    return {"have": usable, "need": MIN_SAMPLES, "class_counts": dict(counts), "ready": ready}
+
+
 def _pipeline() -> Pipeline:
     return Pipeline(
         [
