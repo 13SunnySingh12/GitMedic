@@ -15,13 +15,13 @@ npm run build
 
 ## Structure
 
-| Path | Contents |
-|---|---|
-| `src/api/` | `client.js` (fetch wrapper: CSRF header on writes, problem-details errors, 401 handling) and `hooks.js` (TanStack Query hooks per endpoint) |
-| `src/components/` | App shell and sub-navigation, status primitives (risk badge, sync status, per-widget query states), dialog, pagination, heatmap |
-| `src/pages/` | One file per route in spec §3.1 (the dashboard is lazy-loaded with the charting library) |
-| `src/utils/format.js` | Date, relative time, percentage and day formatting |
-| `src/test/` | MSW server, render helpers, page tests |
+| Path                  | Contents                                                                                                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/api/`            | `client.js` (fetch wrapper: CSRF header on writes, problem-details errors, 401 handling) and `hooks.js` (TanStack Query hooks per endpoint) |
+| `src/components/`     | App shell and sub-navigation, status primitives (risk badge, sync status, per-widget query states), dialog, pagination, heatmap             |
+| `src/pages/`          | One file per route in spec §3.1 (the dashboard is lazy-loaded with the charting library)                                                    |
+| `src/utils/format.js` | Date, relative time, percentage and day formatting                                                                                          |
+| `src/test/`           | MSW server, render helpers, page tests                                                                                                      |
 
 ## Visual direction (spec §4.1, TBD-12)
 

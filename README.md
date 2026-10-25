@@ -62,10 +62,15 @@ passwords you choose (they never appear in the file):
 psql "<session-pooler-connection-string>" -v app_password='<pw1>' -v ml_password='<pw2>' -f backend/db/setup-roles.sql
 ```
 
-Use the **session pooler** connection string (IPv4-compatible). Through the pooler, the user name
-is `<role>.<project-ref>`, for example `gitmedic_app.abcd1234`. In the dashboard, check that the
-Data API "exposed schemas" list does not include `gitmedic`. GitMedic never uses the Supabase
-`service_role` key, Auth, Storage or Data API.
+(Alternatively, run the script's statements in the dashboard's SQL editor with your passwords in
+place of the variables.) Use the **session pooler** connection (IPv4-compatible, port 5432).
+Through the pooler, the user name is `<role>.<project-ref>`, for example `gitmedic_app.abcd1234`.
+Check that the Data API "exposed schemas" list does not include `gitmedic`. GitMedic never uses
+the Supabase `service_role` key, Auth, Storage or Data API.
+
+To keep a local-database `.env` and a Supabase one side by side, put the Supabase values in
+`.env.supabase` (gitignored) and select it per run with `GITMEDIC_ENV_FILE=.env.supabase`; both the
+backend and the ML service honour it.
 
 ### 2. Secrets
 
