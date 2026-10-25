@@ -1,6 +1,7 @@
 package dev.gitmedic.common;
 
 import dev.gitmedic.config.RequestIdFilter;
+import dev.gitmedic.github.GitHubException;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,30 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return ResponseEntity.status(ex.status()).body(pd);
   }
 
+  /** Maps GitHub failures during a request to the §7.1 status codes. */
+  @ExceptionHandler(GitHubException.class)
+  ResponseEntity<ProblemDetail> github(GitHubException ex) {
+    return api(
+        switch (ex.kind()) {
+          case NOT_FOUND ->
+              new ApiException(HttpStatus.NOT_FOUND, "GITHUB_NOT_FOUND", "Not found on GitHub.");
+          case TOKEN_INVALID ->
+              new ApiException(
+                  HttpStatus.UNAUTHORIZED,
+                  "GITHUB_TOKEN_INVALID",
+                  "GitHub no longer accepts your sign-in. Sign in again.");
+          case RATE_LIMITED ->
+              new ApiException(
+                  HttpStatus.TOO_MANY_REQUESTS,
+                  "GITHUB_RATE_LIMITED",
+                  "GitHub rate limit reached.",
+                  Map.of("retryAfter", ex.resetAt().toString()));
+          case UNAVAILABLE ->
+              new ApiException(
+                  HttpStatus.BAD_GATEWAY, "GITHUB_UNAVAILABLE", "GitHub is unavailable.");
+        });
+  }
+
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   ResponseEntity<ProblemDetail> typeMismatch(MethodArgumentTypeMismatchException ex) {
     return api(ApiException.badRequest("Invalid value for parameter '" + ex.getName() + "'."));
@@ -50,7 +75,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   @Override
   protected ResponseEntity<Object> handleExceptionInternal(
       Exception ex, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-    if (body instanceof ProblemDetail pd) {
+    ResponseEntity<Object> response =
+        super.handleExceptionInternal(ex, body, headers, status, request);
+    if (response != null && response.getBody() instanceof ProblemDetail pd) {
       pd.setProperty("code", codeFor(status));
       pd.setProperty("requestId", MDC.get(RequestIdFilter.MDC_KEY));
       if (ex instanceof MethodArgumentNotValidException manv) {
@@ -60,10 +87,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(
                     e ->
                         Map.of(
-                            "field",
-                            e.getField(),
-                            "message",
-                            String.valueOf(e.getDefaultMessage())))
+                            "field", e.getField(),
+                            "message", String.valueOf(e.getDefaultMessage())))
                 .toList());
       } else if (ex instanceof HandlerMethodValidationException hmv) {
         pd.setProperty(
@@ -82,7 +107,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .toList());
       }
     }
-    return super.handleExceptionInternal(ex, body, headers, status, request);
+    return response;
   }
 
   private static String codeFor(HttpStatusCode status) {
