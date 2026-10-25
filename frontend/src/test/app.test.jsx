@@ -197,7 +197,8 @@ describe('issues', () => {
           suggestedAnswer: {
             mode: 'RETRIEVAL_ONLY',
             llmStatus: 'DISABLED',
-            draft: 'Related: closed issue #41. <img src=x onerror=alert(1)>',
+            draft:
+              'Related: closed issue #41. <img src=x onerror=alert(1)> ![pixel](https://tracker.example/p.png)',
             sources: [
               {
                 type: 'doc',
@@ -205,6 +206,13 @@ describe('issues', () => {
                 url: 'https://github.com/octo/demo/blob/main/docs/faq.md#saving',
                 snippet: 'Upgrade to 2.3',
                 score: 0.7,
+              },
+              {
+                type: 'doc',
+                ref: 'docs/evil.md',
+                url: 'javascript:alert(1)',
+                snippet: 'x',
+                score: 0.5,
               },
             ],
           },
@@ -220,7 +228,10 @@ describe('issues', () => {
       'href',
       'https://github.com/octo/demo/blob/main/docs/faq.md#saving',
     );
-    expect(container.querySelector('img')).toBeNull(); // react-markdown left raw HTML as text
+    expect(container.querySelector('img')).toBeNull(); // no raw HTML and no Markdown images (F-03)
+    // F-04: a non-http(s) URL is shown as text, never as a link.
+    expect(screen.getByText('docs/evil.md').closest('a')).toBeNull();
+    expect(container.querySelector('a[href^="javascript"]')).toBeNull();
     expect(screen.getByRole('button', { name: 'Copy draft' })).toBeInTheDocument();
     await expectNoAxeViolations(container);
   });

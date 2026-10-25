@@ -253,13 +253,34 @@ public class GitHubClient {
     return null;
   }
 
-  private static URI nextLink(HttpHeaders h) {
+  /**
+   * The next page from the Link header. Only same-origin links are followed: the request carries
+   * the user's token, so a link to another host must never be requested (F-02).
+   */
+  private URI nextLink(HttpHeaders h) {
     String link = h.getFirst(HttpHeaders.LINK);
     if (link == null) {
       return null;
     }
     Matcher m = NEXT.matcher(link);
-    return m.find() ? URI.create(m.group(1)) : null;
+    if (!m.find()) {
+      return null;
+    }
+    URI next = URI.create(m.group(1));
+    URI base = URI.create(baseUrl);
+    boolean sameOrigin =
+        base.getScheme().equalsIgnoreCase(String.valueOf(next.getScheme()))
+            && base.getHost().equalsIgnoreCase(String.valueOf(next.getHost()))
+            && port(base) == port(next);
+    if (!sameOrigin) {
+      throw new GitHubException(
+          Kind.UNAVAILABLE, "GitHub returned a pagination link to another host; not followed.");
+    }
+    return next;
+  }
+
+  private static int port(URI u) {
+    return u.getPort() != -1 ? u.getPort() : "https".equalsIgnoreCase(u.getScheme()) ? 443 : 80;
   }
 
   private static String fingerprint(String token) {

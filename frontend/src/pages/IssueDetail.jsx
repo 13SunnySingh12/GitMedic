@@ -18,7 +18,7 @@ function Duplicates({ items }) {
             #{d.number} {d.title}
           </GitHubLink>
           <div className="muted small">
-            {d.state}, similarity {d.score.toFixed(2)}
+            {d.state}, similarity {d.score.toFixed(2)} (0 to 1; higher means more alike)
           </div>
         </li>
       ))}
@@ -44,7 +44,9 @@ function SuggestedAnswer({ answer }) {
       </p>
       {/* react-markdown never renders raw HTML (SEC-10). */}
       <div className="prose">
-        <Markdown>{answer.draft}</Markdown>
+        <Markdown disallowedElements={['img']} unwrapDisallowed>
+          {answer.draft}
+        </Markdown>
       </div>
       <div className="row">
         <button type="button" className="btn btn-small" onClick={copy}>

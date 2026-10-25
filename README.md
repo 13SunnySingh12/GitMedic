@@ -177,7 +177,7 @@ exists, OWASP Dependency-Check. No tests call GitHub, Supabase or an LLM.
 | ML log: "relation gitmedic.… does not exist" | Start the backend once so Flyway migrates |
 | OAuth `redirect_uri_mismatch` | The OAuth App callback must be exactly `http://localhost:8080/login/oauth2/code/github` |
 | Sign-in loops back to the login page | Open the app at `:5173`, not `:8080` |
-| Pages show "ML service is unavailable" | Start FastAPI; make `INTERNAL_API_TOKEN` identical in both `.env` files |
+| Pages show "ML service is unavailable", or `/actuator/health` shows `ml: DEGRADED` | Start FastAPI; make `INTERNAL_API_TOKEN` identical in both `.env` files |
 | Sync shows "Paused (rate limit)" | It resumes automatically after the GitHub reset time shown |
 | Webhook deliveries answer 401 | `GITHUB_WEBHOOK_SECRET` must match the forwarder's `--secret` |
 
@@ -186,6 +186,8 @@ exists, OWASP Dependency-Check. No tests call GitHub, Supabase or an LLM.
 - The weekly report scheduler only runs while the backend runs; a missed week is generated at the
   next start.
 - Small repositories may not have enough labelled issues (30) or merged pull requests (20) to train.
+- The first sync of a large repository is slow on CPU: embedding 10,000 issues took about 5.5 minutes
+  in local measurements. Later syncs only re-embed issues that changed.
 - Embeddings are English-focused; other languages work with lower accuracy.
 - The risk score is a heuristic and has not been validated against real abandonment outcomes.
 - Optional LLM polishing of answers (Groq, FR-018) is not enabled; answers are retrieval-only.

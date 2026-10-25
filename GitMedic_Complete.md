@@ -470,7 +470,7 @@ Rate-limit budget example (initial sync, 1,000 issues / 500 PRs / 3,000 commits)
 - Spring: SLF4J/Logback, MDC `requestId` (from `X-Request-Id` or generated), forwarded to FastAPI; FastAPI logs it.
 - Errors: Spring `ProblemDetail` (RFC 9457) with `code`; FastAPI equivalent JSON `{code, message, request_id}`.
 - Never log tokens, secrets, cookies, full issue bodies (log IDs only).
-- Health: Spring Actuator `/actuator/health` (DB + ML ping); FastAPI `/health` (DB + model dir).
+- Health: Spring Actuator `/actuator/health` (DB + ML ping; statuses only, no details, because the endpoint is unauthenticated; an unreachable ML service shows as component `ml: DEGRADED` while the app stays `UP`, NFR-008); FastAPI `/health` (DB + model dir).
 
 ### 5.11 Free-tier feasibility
 | Service | Classification | Relevant limits | Mitigation |
@@ -1239,13 +1239,16 @@ A-1 Personas (§1.2) · A-2 Supabase Free lacks guaranteed backups · A-3 Supaba
 | TBD-12 | Calm clinical direction documented in `frontend/README.md` | axe: 0 violations, light and dark, 1280 and 360 px |
 | TBD-13 | `gh webhook forward --secret <GITHUB_WEBHOOK_SECRET>` | Source of cli/gh-webhook |
 | TBD-14 | BR-13 values kept | — |
-| TBD-05, TBD-15 | Open: Groq terms not verified, so FR-018 (P2) stays disabled; GitMedic's GitHub remote and visibility not chosen yet | Need the owner's decision |
+| TBD-15 | Repository `13SunnySingh12/GitMedic`, public: standard runners are free; CodeRabbit is installed by the owner but skips reviews below 10 stars | Verified 2026-10-25 |
+| TBD-05 | Open: Groq terms not verified, so FR-018 (P2) stays disabled | Needs the owner's decision |
+| Source docs | `GitMedic.md`, cited above as the upstream feature list, is not in the repository; this specification is the authoritative source | Recorded 2026-10-26 |
 
 **Change History**
 | Version | Date | Change |
 |---|---|---|
 | 1.0.0 | 2026-10 | Initial specification |
 | 1.1.0 | 2026-10-25 | Added ML-11 (model status + training readiness). Spring data access uses `JdbcClient` instead of JPA: natural-key upserts (`ON CONFLICT`), `text[]`, `jsonb` and `vector` columns are plain SQL. Report "Generate now" accepts `{"period":"current"|"previous"}` (default current) and regenerating a period replaces it. Risk history rows are keyed by the as-of time. Dev-only `seed` profile. `GITMEDIC_ENV_FILE` selects the backend env file (default `.env`). TBD resolutions above |
+| 1.1.1 | 2026-10-26 | Audit fixes: GitHub `Link` pagination only followed on the configured API origin (the user token could otherwise go to another host); API request bodies capped at 64 KB (413 `PAYLOAD_TOO_LARGE`); public health shows statuses only, with ML as a non-fatal component; incremental commit sync overlaps the previous sync by 7 days; the add-repository picker caches the GitHub repo list per user for 60 s; suggested-answer Markdown renders no images; GitHub links accept http(s) only; setuptools 84.2.1 pinned (runtime dependency of torch with known advisories); database dumps gitignored. NFR-003 measured (Appendix A) |
 
 ---
 
@@ -1267,8 +1270,8 @@ A-1 Personas (§1.2) · A-2 Supabase Free lacks guaranteed backups · A-3 Supaba
 - [x] End-to-end local run with the `seed` profile: real migrations as `gitmedic_app`, real ML pipeline (label macro-F1 0.80 on 70 samples, merge-time MAE 0.9 days), duplicates, suggested answers, reports and downloads verified in the browser and over HTTP.
 - [x] Accessibility: axe-core 0 violations on all 9 routes, light and dark, 1280 and 360 px; no page-level horizontal scroll at 360 px.
 - [ ] Security controls SEC-01…SEC-22. Tested: SEC-01–08, 10, 12–16, 21 (SEC-15 also on the Supabase project: no `anon`/`authenticated` access, security advisor clean apart from the intended deny-by-default INFO on `users` and `weekly_reports`). Not separately tested: SEC-09 (parameterized SQL by construction, whitelisted sort keys tested), SEC-11 (Spring has no CORS configuration; ML no-CORS tested), SEC-19 (generic problem bodies; no dedicated log-redaction test). Not applicable while the LLM is disabled: SEC-17/18. Pending: SEC-20 (CI security job), SEC-22 (manual scope review).
-- [ ] CI workflow green (needs a GitHub remote; TBD-15).
-- [ ] Performance targets (NFR-003, QA-PERF-01) not measured.
+- [x] CI green on `main` (run 40217397064, 2026-10-25, all five jobs); 1 of the 3 consecutive runs required by §2.8.
+- [x] Performance (NFR-003, QA-PERF-01), measured 2026-10-26 on the local Docker database with a 10,000-issue / 500-PR / 5,000-commit repo, 100 sequential requests per endpoint after 5 warm-ups (single developer laptop, CPU only): list/dashboard APIs p95 4.6–145 ms (dashboard highest; it calls the ML service); duplicate search p95 16.8 ms (real MiniLM, 10k vectors); label prediction 0.08 ms/issue in batches of 500, 6.7 ms for one issue. Initial embedding of 10k issues took 328 s. Storage for that maximum-size repo: 47 MB (embeddings 41 MB), so the 400 MB budget (NFR-012) holds about 8 such repos.
 - [ ] Real GitHub OAuth login and sync (needs the owner's OAuth App); T-9.2.
 
 **Decisions still TBD:** TBD-05, TBD-15 (§12.6). No open TBD blocks a P0/P1 requirement; TBD-02/08 are resolved in design and await the owner's Supabase/OAuth setup.

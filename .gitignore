@@ -21,6 +21,11 @@ htmlcov/
 # ML artefacts (re-creatable by retraining)
 ml-service/data/models/
 
+# Database dumps and backups (may contain private repository data)
+*.dump
+*backup*.sql
+*.sql.gz
+
 # Local tooling
 graphify-out/
 .idea/

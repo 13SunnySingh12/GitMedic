@@ -76,6 +76,11 @@ export default function Issues() {
           Possible duplicates only
         </label>
       </form>
+      <p className="muted small" style={{ marginBottom: 12 }}>
+        Labels and duplicate flags are predictions from this repository&apos;s own history, not
+        facts. &ldquo;Possible duplicate&rdquo; means another issue here reads very similarly (score
+        0 to 1, higher is closer); check it before closing anything.
+      </p>
       <QueryState
         query={issues}
         skeleton={300}

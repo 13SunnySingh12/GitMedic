@@ -151,6 +151,18 @@ public final class TestSupport {
 
   /** A FastAPI stand-in: index/risk succeed, models are not trained, no duplicates found. */
   public static void stubMl(WireMockExtension ml) {
+    // Every ML endpoint the app calls has a default answer: an unstubbed call returns WireMock's
+    // non-JSON 404, which MlClient rightly treats as an outage (30 s circuit-break).
+    ml.stubFor(
+        WireMock.post("/internal/v1/suggest")
+            .willReturn(
+                WireMock.okJson(
+                    "{\"sources\":[],\"draft\":\"Insufficient context.\",\"mode\":\"RETRIEVAL_ONLY\","
+                        + "\"llm_status\":\"DISABLED\"}")));
+    ml.stubFor(
+        WireMock.get("/health")
+            .willReturn(
+                WireMock.okJson("{\"status\":\"ok\",\"db\":true,\"embedder_loaded\":false}")));
     ml.stubFor(
         WireMock.post("/internal/v1/index")
             .willReturn(WireMock.okJson("{\"chunks_upserted\":1,\"chunks_skipped\":0}")));

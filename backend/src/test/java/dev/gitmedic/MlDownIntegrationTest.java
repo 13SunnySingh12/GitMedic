@@ -67,6 +67,18 @@ class MlDownIntegrationTest {
         .andExpect(jsonPath("$.code").value("ML_UNAVAILABLE"));
   }
 
+  /** F-05/F-06: ML down is visible but non-fatal; no component details are public. */
+  @Test
+  void healthShowsMlDegradedWithoutDetails() throws Exception {
+    mvc.perform(get("/actuator/health"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("UP"))
+        .andExpect(jsonPath("$.components.db.status").value("UP"))
+        .andExpect(jsonPath("$.components.ml.status").value("DEGRADED"))
+        .andExpect(jsonPath("$.components.db.details").doesNotExist())
+        .andExpect(jsonPath("$.components.diskSpace.details").doesNotExist());
+  }
+
   @Test
   void webhooksAreRefusedWithoutASecret() throws Exception {
     mvc.perform(

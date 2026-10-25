@@ -106,7 +106,7 @@ function ModelPanel({ models, mlStatus, repoId }) {
         model={models.label}
         metric={
           models.label.trained
-            ? `Macro-F1 ${models.label.macroF1.toFixed(2)} on held-out issues.`
+            ? `Macro-F1 ${models.label.macroF1.toFixed(2)} on held-out issues (how well it labels all three kinds alike; 1.00 is perfect).`
             : ''
         }
         train={train}
@@ -116,12 +116,15 @@ function ModelPanel({ models, mlStatus, repoId }) {
         title="Merge-time model"
         model={models.mergeTime}
         metric={
-          models.mergeTime.trained ? `Mean error ${models.mergeTime.maeDays.toFixed(1)} days.` : ''
+          models.mergeTime.trained
+            ? `Estimates are off by ${models.mergeTime.maeDays.toFixed(1)} days on average (mean absolute error).`
+            : ''
         }
         train={train}
       />
       <p className="muted small">
-        {models.chunks} indexed text chunks for duplicate search and answers.
+        {models.chunks} pieces of README, docs and issue text are indexed for duplicate search and
+        suggested answers.
       </p>
     </div>
   );

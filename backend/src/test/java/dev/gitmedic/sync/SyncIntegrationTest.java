@@ -163,11 +163,24 @@ class SyncIntegrationTest {
   void qaSync04_resyncIsIdempotent() throws Exception {
     long repoId = track();
     awaitStatus(repoId, "DONE");
+    Instant firstSync =
+        jdbc.sql("select last_synced_at from gitmedic.repos where id = ?")
+            .param(repoId)
+            .query(java.sql.Timestamp.class)
+            .single()
+            .toInstant();
+    github.resetRequests();
     mvc.perform(write(post("/api/v1/repos/" + repoId + "/sync"))).andExpect(status().isAccepted());
     awaitStatus(repoId, "DONE");
     assertThat(count("issues", repoId)).isEqualTo(120);
     assertThat(count("pull_requests", repoId)).isEqualTo(40);
     assertThat(count("commits", repoId)).isEqualTo(300);
+    // F-09: the incremental commit read starts 7 days before the previous sync.
+    var commitRequests =
+        github.findAll(WireMock.getRequestedFor(urlPathEqualTo(REPO + "/commits")));
+    assertThat(commitRequests).isNotEmpty();
+    Instant since = Instant.parse(commitRequests.getFirst().queryParameter("since").firstValue());
+    assertThat(since).isEqualTo(firstSync.minus(Duration.ofDays(7)));
   }
 
   @Test
@@ -244,6 +257,8 @@ class SyncIntegrationTest {
   @Test
   void githubRepoListMarksTrackedAndFilters() throws Exception {
     track();
+    github.resetRequests();
+    mvc.perform(get("/api/v1/github/repos").cookie(cookie)).andExpect(status().isOk());
     mvc.perform(get("/api/v1/github/repos").param("q", "DEMO").cookie(cookie))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.totalItems").value(1))
@@ -253,6 +268,8 @@ class SyncIntegrationTest {
         .andExpect(status().isBadRequest());
     mvc.perform(get("/api/v1/github/repos").param("size", "1000").cookie(cookie))
         .andExpect(jsonPath("$.size").value(100));
+    // F-10: four picker requests within 60 s read the GitHub list once.
+    github.verify(1, WireMock.getRequestedFor(urlPathEqualTo("/user/repos")));
   }
 
   @Test

@@ -63,6 +63,10 @@ class RepoController {
   private final MlService ml;
   private final JobLimiter limiter;
   private final JdbcClient jdbc;
+  // ponytail: per-user 60 s cache for the picker only; in-memory, fine for one local instance.
+  private final Map<Long, CachedRepos> pickerCache = new java.util.concurrent.ConcurrentHashMap<>();
+
+  private record CachedRepos(List<JsonNode> repos, Instant fetchedAt) {}
 
   RepoController(
       RepoRepository repos,
@@ -92,7 +96,7 @@ class RepoController {
     String needle = q == null ? "" : q.trim().toLowerCase(Locale.ROOT);
     Set<Long> tracked = new HashSet<>(repos.trackedGithubIds(userId));
     List<GitHubRepo> all =
-        userRepos(tokens.githubToken(userId)).stream()
+        pickerRepos(userId).stream()
             .filter(r -> r.path("full_name").asString().toLowerCase(Locale.ROOT).contains(needle))
             .map(
                 r ->
@@ -107,6 +111,16 @@ class RepoController {
     return paging.page(all.subList(from, Math.min(all.size(), from + paging.size())), all.size());
   }
 
+  private List<JsonNode> pickerRepos(long userId) {
+    CachedRepos cached = pickerCache.get(userId);
+    if (cached == null || cached.fetchedAt().isBefore(Instant.now().minusSeconds(60))) {
+      cached = new CachedRepos(userRepos(tokens.githubToken(userId)), Instant.now());
+      pickerCache.put(userId, cached);
+    }
+    return cached.repos();
+  }
+
+  /** Fresh list from GitHub; tracking always validates against this, never the cache. */
   private List<JsonNode> userRepos(String token) {
     return github.list(
         token,

@@ -159,11 +159,11 @@ class IssueController {
                     + COLUMNS
                     + ", body from gitmedic.issues where repo_id = ? and number = ?")
             .params(repo, number)
-            .query((rs, n) -> Map.entry(row(rs), String.valueOf(rs.getString("body"))))
+            .query((rs, n) -> new Object[] {row(rs), rs.getString("body")})
             .optional()
             .orElseThrow(ApiException::notFound);
-    IssueRow issue = found.getKey();
-    String body = "null".equals(found.getValue()) ? null : found.getValue();
+    IssueRow issue = (IssueRow) found[0];
+    String body = (String) found[1];
     Map<String, Object> out = new LinkedHashMap<>();
     out.put("issue", issue);
     out.put("body", body);
