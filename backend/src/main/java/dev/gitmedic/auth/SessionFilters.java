@@ -82,4 +82,37 @@ final class SessionFilters {
       chain.doFilter(req, res);
     }
   }
+
+  /**
+   * Caps API request bodies at 64 KB (the largest real request is a few hundred bytes) so a client
+   * cannot make the server buffer arbitrarily large JSON. Webhooks enforce their own 1 MB.
+   */
+  static final class BodySizeFilter extends OncePerRequestFilter {
+    static final long MAX_BODY = 64 * 1024;
+    private final ObjectMapper mapper;
+
+    BodySizeFilter(ObjectMapper mapper) {
+      this.mapper = mapper;
+    }
+
+    @Override
+    protected void doFilterInternal(
+        HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+        throws ServletException, IOException {
+      String path = req.getRequestURI();
+      boolean api = path.startsWith("/api/") && !path.startsWith("/api/v1/webhooks/");
+      long length = req.getContentLengthLong();
+      boolean chunked = req.getHeader("Transfer-Encoding") != null;
+      if (api && (length > MAX_BODY || (length < 0 && chunked))) {
+        Problems.write(
+            res,
+            mapper,
+            HttpStatus.CONTENT_TOO_LARGE,
+            "PAYLOAD_TOO_LARGE",
+            "Request bodies must declare a Content-Length of at most 64 KB.");
+        return;
+      }
+      chain.doFilter(req, res);
+    }
+  }
 }

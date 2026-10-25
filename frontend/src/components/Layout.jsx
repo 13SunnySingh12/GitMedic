@@ -111,6 +111,9 @@ export function RepoNav() {
 
 /** External GitHub links open in a new tab without opener access (UX-03). */
 export function GitHubLink({ href, children }) {
+  if (!/^https?:\/\//i.test(href ?? '')) {
+    return <span>{children}</span>;
+  }
   return (
     <a href={href} target="_blank" rel="noopener noreferrer">
       {children}

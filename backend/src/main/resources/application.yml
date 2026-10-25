@@ -47,7 +47,12 @@ management:
         include: health
   endpoint:
     health:
-      show-details: always
+      # Statuses only: details (disk paths, DB product) are not for an unauthenticated endpoint.
+      show-components: always
+      show-details: never
+      # An unreachable ML service shows as DEGRADED without turning the app DOWN (NFR-008).
+      status:
+        order: down,out-of-service,up,degraded,unknown
 
 gitmedic:
   frontend-origin: ${FRONTEND_ORIGIN}

@@ -220,7 +220,10 @@ public class SyncService {
 
   private void syncCommits(String token, Repo repo, String branch, Instant since) {
     Instant yearAgo = clock.instant().minus(Duration.ofDays(365));
-    Instant from = since != null && since.isAfter(yearAgo) ? since : yearAgo;
+    // GitHub filters commits by commit date, so commits pushed after the last sync with an older
+    // date would be missed; a 7-day overlap re-reads them (duplicates are ignored on insert).
+    Instant overlapped = since == null ? null : since.minus(Duration.ofDays(7));
+    Instant from = overlapped != null && overlapped.isAfter(yearAgo) ? overlapped : yearAgo;
     List<JsonNode> commits =
         github.list(
             token,

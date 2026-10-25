@@ -19,8 +19,11 @@ import java.time.Instant;
 import java.util.Base64;
 import javax.crypto.spec.SecretKeySpec;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -35,6 +38,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @IntegrationTest
+@ExtendWith(OutputCaptureExtension.class)
 class AuthIntegrationTest {
 
   @RegisterExtension
@@ -68,7 +72,8 @@ class AuthIntegrationTest {
   }
 
   @Test
-  void qaAuth01_successUpsertsUserWithEncryptedTokenAndSetsCookie() throws Exception {
+  void qaAuth01_successUpsertsUserWithEncryptedTokenAndSetsCookie(CapturedOutput logs)
+      throws Exception {
     github.stubFor(
         WireMock.post("/login/oauth/access_token")
             .willReturn(
@@ -111,6 +116,8 @@ class AuthIntegrationTest {
             .getResponse()
             .getContentAsString();
     assertThat(me).doesNotContain("gho_").doesNotContain("token");
+    // SEC-19: the GitHub token and the session JWT never reach the logs.
+    assertThat(logs.getAll()).doesNotContain("gho_plaintext_test").doesNotContain(token);
   }
 
   @Test

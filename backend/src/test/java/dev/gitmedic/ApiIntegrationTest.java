@@ -456,6 +456,37 @@ class ApiIntegrationTest {
   }
 
   @Test
+  void healthReportsMlUpWhenReachable() throws Exception {
+    mvc.perform(get("/actuator/health"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.components.ml.status").value("UP"));
+  }
+
+  /** F-07: oversized API bodies are refused before they are read. */
+  @Test
+  void oversizedApiBodyIs413() throws Exception {
+    mvc.perform(
+            post(base() + "/reports")
+                .cookie(cookie)
+                .header("X-Requested-With", "GitMedic")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"period\":\"" + "x".repeat(70_000) + "\"}"))
+        .andExpect(status().isPayloadTooLarge())
+        .andExpect(jsonPath("$.code").value("PAYLOAD_TOO_LARGE"));
+  }
+
+  /** F-08: an issue whose body is literally "null" keeps that text. */
+  @Test
+  void literalNullBodyIsKept() throws Exception {
+    jdbc.sql("update gitmedic.issues set body = 'null' where repo_id = ? and number = 42")
+        .param(repoId)
+        .update();
+    mvc.perform(get(base() + "/issues/42").cookie(cookie))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.body").value("null"));
+  }
+
+  @Test
   void qaSec11_apiResponsesCarrySecurityHeaders() throws Exception {
     mvc.perform(get(base() + "/dashboard").cookie(cookie))
         .andExpect(

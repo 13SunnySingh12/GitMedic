@@ -61,7 +61,9 @@ class SecurityConfig {
         .addFilterBefore(
             new SessionFilters.JwtCookieFilter(jwt), UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(
-            new SessionFilters.CsrfHeaderFilter(mapper), SessionFilters.JwtCookieFilter.class);
+            new SessionFilters.CsrfHeaderFilter(mapper), SessionFilters.JwtCookieFilter.class)
+        .addFilterBefore(
+            new SessionFilters.BodySizeFilter(mapper), SessionFilters.CsrfHeaderFilter.class);
     return http.build();
   }
 }
