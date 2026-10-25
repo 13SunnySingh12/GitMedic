@@ -28,7 +28,12 @@ export function Heatmap({ data }) {
       <figcaption className="muted small">
         {data.total} commits from {data.from} to {data.to} ({data.timezone})
       </figcaption>
-      <div className="heatmap-scroll">
+      <div
+        className="heatmap-scroll"
+        tabIndex={0}
+        role="region"
+        aria-label="Commit calendar (scrolls horizontally)"
+      >
         <div className="heatmap">
           {cells.map((day, i) =>
             day === null ? (

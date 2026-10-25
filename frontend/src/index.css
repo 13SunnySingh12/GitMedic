@@ -70,13 +70,23 @@ body {
 body {
   background: var(--bg);
   color: var(--text);
-  font: 15px/1.5 var(--font);
+  font: 0.9375rem/1.5 var(--font); /* rem: honours the reader's browser font size */
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
 }
 
 a {
   color: var(--accent);
+  text-underline-offset: 0.18em;
+}
+
+::selection {
+  background: var(--heat-2);
+  color: var(--text);
+}
+
+html {
+  scrollbar-color: var(--border) transparent;
 }
 
 a:hover {
@@ -444,18 +454,19 @@ select {
 
 .notice {
   border: 1px solid var(--border);
-  border-left: 4px solid var(--accent);
-  background: var(--surface);
+  background: var(--surface-sunk);
   border-radius: var(--radius);
   padding: 10px 12px;
 }
 
 .notice-error {
-  border-left-color: var(--high);
+  border-color: var(--high);
+  background: var(--high-bg);
 }
 
 .notice-warn {
-  border-left-color: var(--medium);
+  border-color: var(--medium);
+  background: var(--medium-bg);
 }
 
 .error-text {
@@ -758,9 +769,9 @@ dialog::backdrop {
   gap: 10px;
 }
 
-.sources li {
-  border-left: 3px solid var(--border);
-  padding-left: 10px;
+.sources li + li {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
 }
 
 .pill-list {

@@ -133,7 +133,11 @@ function Weekdays({ data }) {
     <>
       <div style={{ height: 160 }} aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={rows} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>
+          <BarChart
+            accessibilityLayer={false}
+            data={rows}
+            margin={{ top: 4, right: 4, bottom: 0, left: -24 }}
+          >
             <XAxis dataKey="day" tickLine={false} axisLine={false} fontSize={12} />
             <YAxis allowDecimals={false} tickLine={false} axisLine={false} fontSize={12} />
             <Tooltip cursor={{ fill: 'var(--surface-sunk)' }} />
@@ -170,6 +174,7 @@ function BusFactor({ data }) {
       <div style={{ height: 32 * Math.max(data.contributors.length, 1) }} aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
+            accessibilityLayer={false}
             data={data.contributors}
             layout="vertical"
             margin={{ top: 0, right: 8, bottom: 0, left: 8 }}
