@@ -1,0 +1,26 @@
+# Test-only values; low-entropy placeholders, not secrets.
+spring:
+  datasource:
+    url: jdbc:postgresql://overridden-by-testcontainers/test
+    username: test
+    password: test
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: test-client-id
+            client-secret: test-client-secret
+  main:
+    banner-mode: "off"
+gitmedic:
+  frontend-origin: http://localhost:5173
+  jwt-secret: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+  token-encryption-key: AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=
+  webhook-secret: test-webhook-secret
+  ml-base-url: http://127.0.0.1:1
+  internal-api-token: test-internal-token-000000000000000
+logging:
+  structured:
+    format:
+      console: ""

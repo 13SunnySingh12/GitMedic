@@ -1,0 +1,30 @@
+# Secrets (keep the placeholder templates)
+.env
+.env.*
+!.env.example
+
+# Build output
+node_modules/
+dist/
+coverage/
+target/
+!.mvn/wrapper/maven-wrapper.jar
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# ML artefacts (re-creatable by retraining)
+ml-service/data/models/
+
+# Local tooling
+graphify-out/
+.idea/
+.vscode/
+*.iml
+*.log
+.DS_Store

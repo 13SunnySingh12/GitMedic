@@ -1,0 +1,103 @@
+# Validation only (NFR-011): lint, format, tests, build, dependency and secret scans. No deployment.
+name: CI
+on:
+  push:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: frontend } }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm test -- --run
+      - run: npm run build
+
+  backend:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: backend } }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with: { distribution: temurin, java-version: 21, cache: maven }
+      - run: ./mvnw -B spotless:check
+      - run: ./mvnw -B verify # unit + Testcontainers (pgvector/pgvector:pg17) + WireMock tests
+
+  ml:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: ml-service } }
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: gitmedic }
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    env:
+      # Disposable CI database; the suite rebuilds the schema from backend/.../db/migration.
+      ML_TEST_DSN: postgresql://postgres:postgres@127.0.0.1:5432/gitmedic
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: { python-version: '3.12', cache: pip, cache-dependency-path: ml-service/requirements*.txt }
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check . && ruff format --check .
+      - run: mypy app
+      - run: python -m compileall -q app
+      - run: python -c "import app.main"
+      - run: pytest -m "not model"
+      - run: pip-audit --skip-editable
+
+  ml-model:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: ml-service } }
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: gitmedic }
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    env:
+      ML_TEST_DSN: postgresql://postgres:postgres@127.0.0.1:5432/gitmedic
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: { python-version: '3.12', cache: pip, cache-dependency-path: ml-service/requirements*.txt }
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/huggingface
+          key: hf-all-MiniLM-L6-v2
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -r requirements-dev.txt
+      - run: pytest -m model -s
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0 }
+      - name: gitleaks
+        run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.30.1 detect --source=/repo --redact
+      - uses: actions/setup-node@v7
+        with: { node-version: 24 }
+      - run: cd frontend && npm ci && npm audit --audit-level=high
+      - uses: actions/setup-java@v6
+        with: { distribution: temurin, java-version: 21, cache: maven }
+      - name: OWASP Dependency-Check (skipped without NVD_API_KEY)
+        env: { NVD_API_KEY: '${{ secrets.NVD_API_KEY }}' }
+        if: env.NVD_API_KEY != ''
+        run: >-
+          cd backend && ./mvnw -B org.owasp:dependency-check-maven:13.0.0:check
+          -DnvdApiKey="$NVD_API_KEY" -DfailBuildOnCVSS=7

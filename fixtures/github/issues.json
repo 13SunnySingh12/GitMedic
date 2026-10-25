@@ -1,0 +1,2629 @@
+[
+ {
+  "id": 900100,
+  "number": 100,
+  "title": "Search bar shows broken values when locale is German",
+  "body": "The search bar renders wrong numbers and garbled text with a German locale. Bug reproducible every time.",
+  "state": "open",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/100",
+  "created_at": "2026-10-18T02:35:05Z",
+  "updated_at": "2026-10-24T02:35:05Z",
+  "closed_at": null
+ },
+ {
+  "id": 900058,
+  "number": 58,
+  "title": "Hotkey for hiding and showing the side panel",
+  "body": "It would be handy to have a keyboard shortcut that collapses the sidebar.",
+  "state": "open",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/58",
+  "created_at": "2026-10-17T01:30:07Z",
+  "updated_at": "2026-10-23T16:30:07Z",
+  "closed_at": null
+ },
+ {
+  "id": 900127,
+  "number": 127,
+  "title": "Error 500 from the plugin loader after upgrading",
+  "body": "Since the last release the plugin loader fails with an internal server error. Regression, it worked in the previous version.",
+  "state": "open",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/127",
+  "created_at": "2026-10-15T10:13:54Z",
+  "updated_at": "2026-10-20T05:13:54Z",
+  "closed_at": null
+ },
+ {
+  "id": 900083,
+  "number": 83,
+  "title": "Error 500 from the notification center after upgrading",
+  "body": "Since the last release the notification center fails with an internal server error. Regression, it worked in the previous version.",
+  "state": "open",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/83",
+  "created_at": "2026-10-14T18:04:45Z",
+  "updated_at": "2026-10-15T15:04:45Z",
+  "closed_at": null
+ },
+ {
+  "id": 900101,
+  "number": 101,
+  "title": "Error 500 from the login form after upgrading",
+  "body": "Since the last release the login form fails with an internal server error. Regression, it worked in the previous version.",
+  "state": "open",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/101",
+  "created_at": "2026-10-12T08:43:57Z",
+  "updated_at": "2026-10-14T00:43:57Z",
+  "closed_at": null
+ },
+ {
+  "id": 900048,
+  "number": 48,
+  "title": "Report export uses the wrong time zone",
+  "body": "Times in the exported report are an hour off from my timezone.",
+  "state": "open",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/48",
+  "created_at": "2026-10-12T07:40:03Z",
+  "updated_at": "2026-10-19T19:40:03Z",
+  "closed_at": null
+ },
+ {
+  "id": 900089,
+  "number": 89,
+  "title": "The webhook handler crashes with a null reference error",
+  "body": "Steps to reproduce: open the webhook handler and click save. Expected it to work, actual result is a crash and a stack trace.",
+  "state": "open",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/89",
+  "created_at": "2026-10-10T11:23:33Z",
+  "updated_at": "2026-10-17T11:23:33Z",
+  "closed_at": null
+ },
+ {
+  "id": 900124,
+  "number": 124,
+  "title": "Where does the file upload store its logs?",
+  "body": "I am trying to understand where the file upload writes log files and how to change that location. Can someone explain?",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/124",
+  "created_at": "2026-10-03T03:53:14Z",
+  "updated_at": "2026-10-05T01:53:14Z",
+  "closed_at": null
+ },
+ {
+  "id": 900082,
+  "number": 82,
+  "title": "How do I use the settings page behind a corporate proxy?",
+  "body": "Question: what is the right way to run the settings page behind a proxy? I could not find this in the docs. Any advice?",
+  "state": "open",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/82",
+  "created_at": "2026-09-29T15:05:15Z",
+  "updated_at": "2026-09-30T22:05:15Z",
+  "closed_at": null
+ },
+ {
+  "id": 900146,
+  "number": 146,
+  "title": "Is it possible to run the plugin loader inside Docker?",
+  "body": "Wondering whether the plugin loader works in a container. How should I set it up? Thanks for any help or guidance.",
+  "state": "open",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "good first issue"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/146",
+  "created_at": "2026-09-29T05:18:26Z",
+  "updated_at": "2026-09-29T16:18:26Z",
+  "closed_at": null
+ },
+ {
+  "id": 900136,
+  "number": 136,
+  "title": "The notification center crashes with a null reference error",
+  "body": "Steps to reproduce: open the notification center and click save. Expected it to work, actual result is a crash and a stack trace.",
+  "state": "closed",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/136",
+  "created_at": "2026-09-25T10:04:50Z",
+  "updated_at": "2026-10-04T10:04:50Z",
+  "closed_at": "2026-10-04T10:04:50Z"
+ },
+ {
+  "id": 900139,
+  "number": 139,
+  "title": "Allow bulk actions in the webhook handler",
+  "body": "Feature request: please allow selecting many items in the webhook handler and applying an action to all of them at once.",
+  "state": "open",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/139",
+  "created_at": "2026-09-22T02:05:46Z",
+  "updated_at": "2026-09-27T21:05:46Z",
+  "closed_at": null
+ },
+ {
+  "id": 700009,
+  "number": 9,
+  "title": "Refactor plugin loader (#9)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/9",
+  "created_at": "2026-09-20T00:45:39Z",
+  "updated_at": "2026-09-22T21:47:59Z",
+  "closed_at": "2026-09-22T21:47:59Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/9"
+  }
+ },
+ {
+  "id": 900148,
+  "number": 148,
+  "title": "Where does the search bar store its logs?",
+  "body": "I am trying to understand where the search bar writes log files and how to change that location. Can someone explain?",
+  "state": "closed",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/148",
+  "created_at": "2026-09-18T08:40:46Z",
+  "updated_at": "2026-10-16T08:40:46Z",
+  "closed_at": "2026-10-16T08:40:46Z"
+ },
+ {
+  "id": 900056,
+  "number": 56,
+  "title": "Export dashboard to an image file",
+  "body": "Please add a way to save the dashboard as an image (PNG) for presentations.",
+  "state": "open",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/56",
+  "created_at": "2026-09-18T01:40:19Z",
+  "updated_at": "2026-09-19T09:40:19Z",
+  "closed_at": null
+ },
+ {
+  "id": 900042,
+  "number": 42,
+  "title": "Crash on save if the filename has emoji",
+  "body": "Whenever the file name includes an emoji the application crashes as soon as I hit save.",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/42",
+  "created_at": "2026-09-14T00:45:16Z",
+  "updated_at": "2026-09-16T10:45:16Z",
+  "closed_at": null
+ },
+ {
+  "id": 900104,
+  "number": 104,
+  "title": "Allow bulk actions in the CSV export",
+  "body": "Feature request: please allow selecting many items in the CSV export and applying an action to all of them at once.",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/104",
+  "created_at": "2026-09-10T13:22:24Z",
+  "updated_at": "2026-09-13T10:22:24Z",
+  "closed_at": null
+ },
+ {
+  "id": 900153,
+  "number": 153,
+  "title": "Option to configure the login form from a config file",
+  "body": "",
+  "state": "closed",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "good first issue"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/153",
+  "created_at": "2026-09-08T20:20:11Z",
+  "updated_at": "2026-09-26T20:20:11Z",
+  "closed_at": "2026-09-26T20:20:11Z"
+ },
+ {
+  "id": 900044,
+  "number": 44,
+  "title": "Cannot sign in again once the session times out",
+  "body": "After the session times out, logging in keeps failing unless I delete the cookies.",
+  "state": "open",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/44",
+  "created_at": "2026-09-04T23:46:19Z",
+  "updated_at": "2026-09-11T07:46:19Z",
+  "closed_at": null
+ },
+ {
+  "id": 900072,
+  "number": 72,
+  "title": "Where to configure the maximum upload size",
+  "body": "Files bigger than 10MB fail to upload. How can I change the max size?",
+  "state": "open",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/72",
+  "created_at": "2026-09-04T22:22:38Z",
+  "updated_at": "2026-09-08T07:22:38Z",
+  "closed_at": null
+ },
+ {
+  "id": 900050,
+  "number": 50,
+  "title": "Sidebar labels invisible with dark theme",
+  "body": "With the dark theme enabled the sidebar text has almost no contrast and can't be read.",
+  "state": "open",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/50",
+  "created_at": "2026-09-04T15:41:06Z",
+  "updated_at": "2026-09-12T18:41:06Z",
+  "closed_at": null
+ },
+ {
+  "id": 900074,
+  "number": 74,
+  "title": "Windows support for the command line tool",
+  "body": "Is the CLI usable on Windows machines?",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/74",
+  "created_at": "2026-08-30T18:37:55Z",
+  "updated_at": "2026-09-02T14:37:55Z",
+  "closed_at": null
+ },
+ {
+  "id": 900064,
+  "number": 64,
+  "title": "API to fetch the list of projects",
+  "body": "Please expose an HTTP API that returns all projects so we can script against it.",
+  "state": "open",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/64",
+  "created_at": "2026-08-21T17:14:18Z",
+  "updated_at": "2026-08-23T23:14:18Z",
+  "closed_at": null
+ },
+ {
+  "id": 900143,
+  "number": 143,
+  "title": "Where does the dark mode store its logs?",
+  "body": "I am trying to understand where the dark mode writes log files and how to change that location. Can someone explain?",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/143",
+  "created_at": "2026-08-20T11:10:20Z",
+  "updated_at": "2026-08-23T19:10:20Z",
+  "closed_at": null
+ },
+ {
+  "id": 900157,
+  "number": 157,
+  "title": "Where does the date picker store its logs?",
+  "body": "I am trying to understand where the date picker writes log files and how to change that location. Can someone explain?",
+  "state": "open",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [
+   {
+    "name": "wontfix"
+   }
+  ],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/157",
+  "created_at": "2026-08-19T16:37:19Z",
+  "updated_at": "2026-08-22T23:37:19Z",
+  "closed_at": null
+ },
+ {
+  "id": 900128,
+  "number": 128,
+  "title": "API client shows broken values when locale is German",
+  "body": "The API client renders wrong numbers and garbled text with a German locale. Bug reproducible every time.",
+  "state": "open",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/128",
+  "created_at": "2026-08-18T19:22:15Z",
+  "updated_at": "2026-08-21T18:22:15Z",
+  "closed_at": null
+ },
+ {
+  "id": 900096,
+  "number": 96,
+  "title": "User profile shows broken values when locale is German",
+  "body": "The user profile renders wrong numbers and garbled text with a German locale. Bug reproducible every time.",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/96",
+  "created_at": "2026-08-17T20:46:22Z",
+  "updated_at": "2026-10-02T20:46:22Z",
+  "closed_at": "2026-10-02T20:46:22Z"
+ },
+ {
+  "id": 900159,
+  "number": 159,
+  "title": "Option to configure the user profile from a config file",
+  "body": "Proposal: add a new option so the user profile can be configured declaratively. Would be a nice improvement.",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "help wanted"
+   }
+  ],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/159",
+  "created_at": "2026-08-16T20:17:39Z",
+  "updated_at": "2026-10-02T20:17:39Z",
+  "closed_at": "2026-10-02T20:17:39Z"
+ },
+ {
+  "id": 900158,
+  "number": 158,
+  "title": "Option to configure the offline mode from a config file",
+  "body": "Proposal: add a new option so the offline mode can be configured declaratively. Would be a nice improvement.",
+  "state": "closed",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "documentation"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/158",
+  "created_at": "2026-08-10T02:51:26Z",
+  "updated_at": "2026-08-18T02:51:26Z",
+  "closed_at": "2026-08-18T02:51:26Z"
+ },
+ {
+  "id": 900070,
+  "number": 70,
+  "title": "Is MySQL supported or just Postgres?",
+  "body": "Wondering which database engines are officially supported for production use.",
+  "state": "open",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/70",
+  "created_at": "2026-08-08T12:52:06Z",
+  "updated_at": "2026-08-11T21:52:06Z",
+  "closed_at": null
+ },
+ {
+  "id": 900078,
+  "number": 78,
+  "title": "Last page of the list drops some records",
+  "body": "When paging through results, the last page omits some items.",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/78",
+  "created_at": "2026-08-06T16:19:05Z",
+  "updated_at": "2026-08-08T04:19:05Z",
+  "closed_at": null
+ },
+ {
+  "id": 900112,
+  "number": 112,
+  "title": "How do I use the notification center behind a corporate proxy?",
+  "body": "Question: what is the right way to run the notification center behind a proxy? I could not find this in the docs. Any advice?",
+  "state": "closed",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   },
+   {
+    "name": "enhancement"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/112",
+  "created_at": "2026-08-05T06:21:27Z",
+  "updated_at": "2026-09-08T06:21:27Z",
+  "closed_at": "2026-09-08T06:21:27Z"
+ },
+ {
+  "id": 900131,
+  "number": 131,
+  "title": "How do I use the plugin loader behind a corporate proxy?",
+  "body": "Question: what is the right way to run the plugin loader behind a proxy? I could not find this in the docs. Any advice?",
+  "state": "closed",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "help wanted"
+   }
+  ],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/131",
+  "created_at": "2026-08-04T08:18:13Z",
+  "updated_at": "2026-08-31T08:18:13Z",
+  "closed_at": "2026-08-31T08:18:13Z"
+ },
+ {
+  "id": 900125,
+  "number": 125,
+  "title": "Allow bulk actions in the notification center",
+  "body": "Feature request: please allow selecting many items in the notification center and applying an action to all of them at once.",
+  "state": "open",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/125",
+  "created_at": "2026-07-31T06:22:04Z",
+  "updated_at": "2026-08-05T03:22:04Z",
+  "closed_at": null
+ },
+ {
+  "id": 700014,
+  "number": 14,
+  "title": "Fix plugin loader (#14)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/14",
+  "created_at": "2026-07-30T09:30:26Z",
+  "updated_at": "2026-08-06T09:15:24Z",
+  "closed_at": "2026-08-06T09:15:24Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/14"
+  }
+ },
+ {
+  "id": 900156,
+  "number": 156,
+  "title": "Add support for custom themes in the sync service",
+  "body": "It would be great if the sync service supported custom themes. This enhancement would let teams match their branding.",
+  "state": "closed",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "wontfix"
+   }
+  ],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/156",
+  "created_at": "2026-07-29T15:55:25Z",
+  "updated_at": "2026-09-10T15:55:25Z",
+  "closed_at": "2026-09-10T15:55:25Z"
+ },
+ {
+  "id": 900155,
+  "number": 155,
+  "title": "Allow bulk actions in the plugin loader",
+  "body": "Feature request: please allow selecting many items in the plugin loader and applying an action to all of them at once.",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "help wanted"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/155",
+  "created_at": "2026-07-29T04:56:44Z",
+  "updated_at": "2026-09-13T04:56:44Z",
+  "closed_at": "2026-09-13T04:56:44Z"
+ },
+ {
+  "id": 900093,
+  "number": 93,
+  "title": "Error 500 from the user profile after upgrading",
+  "body": "Since the last release the user profile fails with an internal server error. Regression, it worked in the previous version.",
+  "state": "open",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/93",
+  "created_at": "2026-07-27T23:56:15Z",
+  "updated_at": "2026-07-28T13:56:15Z",
+  "closed_at": null
+ },
+ {
+  "id": 900113,
+  "number": 113,
+  "title": "The file upload crashes with a null reference error",
+  "body": "Steps to reproduce: open the file upload and click save. Expected it to work, actual result is a crash and a stack trace.",
+  "state": "open",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   },
+   {
+    "name": "enhancement"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/113",
+  "created_at": "2026-07-27T17:58:21Z",
+  "updated_at": "2026-07-29T20:58:21Z",
+  "closed_at": null
+ },
+ {
+  "id": 900121,
+  "number": 121,
+  "title": "Add support for custom themes in the webhook handler",
+  "body": "It would be great if the webhook handler supported custom themes. This enhancement would let teams match their branding.",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "help wanted"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/121",
+  "created_at": "2026-07-22T06:54:36Z",
+  "updated_at": "2026-09-12T06:54:36Z",
+  "closed_at": "2026-09-12T06:54:36Z"
+ },
+ {
+  "id": 900085,
+  "number": 85,
+  "title": "Option to configure the plugin loader from a config file",
+  "body": "Proposal: add a new option so the plugin loader can be configured declaratively. Would be a nice improvement.",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/85",
+  "created_at": "2026-07-21T02:17:54Z",
+  "updated_at": "2026-07-28T06:17:54Z",
+  "closed_at": null
+ },
+ {
+  "id": 900126,
+  "number": 126,
+  "title": "Option to configure the date picker from a config file",
+  "body": "",
+  "state": "open",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "wontfix"
+   }
+  ],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/126",
+  "created_at": "2026-07-20T06:16:31Z",
+  "updated_at": "2026-07-26T19:16:31Z",
+  "closed_at": null
+ },
+ {
+  "id": 900080,
+  "number": 80,
+  "title": "Bulk import contacts from CSV",
+  "body": "Feature idea: import a list of contacts via a CSV upload.",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/80",
+  "created_at": "2026-07-20T04:07:52Z",
+  "updated_at": "2026-07-26T21:07:52Z",
+  "closed_at": null
+ },
+ {
+  "id": 900116,
+  "number": 116,
+  "title": "Is it possible to run the CLI installer inside Docker?",
+  "body": "Wondering whether the CLI installer works in a container. How should I set it up? Thanks for any help or guidance.",
+  "state": "closed",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   },
+   {
+    "name": "enhancement"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/116",
+  "created_at": "2026-07-19T23:53:32Z",
+  "updated_at": "2026-08-14T23:53:32Z",
+  "closed_at": "2026-08-14T23:53:32Z"
+ },
+ {
+  "id": 900117,
+  "number": 117,
+  "title": "Allow bulk actions in the CLI installer",
+  "body": "",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "wontfix"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/117",
+  "created_at": "2026-07-19T05:35:29Z",
+  "updated_at": "2026-07-25T19:35:29Z",
+  "closed_at": null
+ },
+ {
+  "id": 900147,
+  "number": 147,
+  "title": "Date picker shows broken values when locale is German",
+  "body": "The date picker renders wrong numbers and garbled text with a German locale. Bug reproducible every time.",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "wontfix"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/147",
+  "created_at": "2026-07-17T21:49:32Z",
+  "updated_at": "2026-08-19T21:49:32Z",
+  "closed_at": "2026-08-19T21:49:32Z"
+ },
+ {
+  "id": 900120,
+  "number": 120,
+  "title": "CLI installer shows broken values when locale is German",
+  "body": "The CLI installer renders wrong numbers and garbled text with a German locale. Bug reproducible every time.",
+  "state": "closed",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "help wanted"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/120",
+  "created_at": "2026-07-16T20:56:02Z",
+  "updated_at": "2026-08-18T20:56:02Z",
+  "closed_at": "2026-08-18T20:56:02Z"
+ },
+ {
+  "id": 900086,
+  "number": 86,
+  "title": "The user profile crashes with a null reference error",
+  "body": "Steps to reproduce: open the user profile and click save. Expected it to work, actual result is a crash and a stack trace.",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/86",
+  "created_at": "2026-07-11T16:30:12Z",
+  "updated_at": "2026-08-01T16:30:12Z",
+  "closed_at": "2026-08-01T16:30:12Z"
+ },
+ {
+  "id": 900041,
+  "number": 41,
+  "title": "App crashes when saving a file with an emoji in its name",
+  "body": "Saving a document whose filename contains emoji characters makes the app crash.",
+  "state": "closed",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/41",
+  "created_at": "2026-07-09T07:53:23Z",
+  "updated_at": "2026-07-13T07:53:23Z",
+  "closed_at": "2026-07-13T07:53:23Z"
+ },
+ {
+  "id": 900046,
+  "number": 46,
+  "title": "Memory leak in long-running synchronization",
+  "body": "The sync process leaks memory: after a few hours RAM usage is huge and it gets OOM killed.",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/46",
+  "created_at": "2026-07-07T07:31:23Z",
+  "updated_at": "2026-07-12T17:31:23Z",
+  "closed_at": null
+ },
+ {
+  "id": 900068,
+  "number": 68,
+  "title": "Upgrade guide from v1 to v2 data",
+  "body": "Is there documentation on migrating my existing v1 data into v2?",
+  "state": "open",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/68",
+  "created_at": "2026-06-30T21:53:56Z",
+  "updated_at": "2026-07-08T06:53:56Z",
+  "closed_at": null
+ },
+ {
+  "id": 900122,
+  "number": 122,
+  "title": "How do I use the markdown preview behind a corporate proxy?",
+  "body": "Question: what is the right way to run the markdown preview behind a proxy? I could not find this in the docs. Any advice?",
+  "state": "open",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "wontfix"
+   }
+  ],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/122",
+  "created_at": "2026-06-28T09:29:10Z",
+  "updated_at": "2026-07-04T13:29:10Z",
+  "closed_at": null
+ },
+ {
+  "id": 900111,
+  "number": 111,
+  "title": "Is it possible to run the date picker inside Docker?",
+  "body": "Wondering whether the date picker works in a container. How should I set it up? Thanks for any help or guidance.",
+  "state": "open",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   },
+   {
+    "name": "enhancement"
+   }
+  ],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/111",
+  "created_at": "2026-06-26T10:16:33Z",
+  "updated_at": "2026-06-26T22:16:33Z",
+  "closed_at": null
+ },
+ {
+  "id": 900055,
+  "number": 55,
+  "title": "Support exporting dashboards as PNG images",
+  "body": "I would like to download a dashboard as a PNG picture to paste into slides.",
+  "state": "closed",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "enhancement"
+   }
+  ],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/55",
+  "created_at": "2026-06-25T11:08:04Z",
+  "updated_at": "2026-07-04T11:08:04Z",
+  "closed_at": "2026-07-04T11:08:04Z"
+ },
+ {
+  "id": 900047,
+  "number": 47,
+  "title": "Timezone offset is wrong in exported reports",
+  "body": "Exported reports show times shifted by one hour compared to my local timezone.",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 5,
+  "html_url": "https://github.com/octo/demo/issues/47",
+  "created_at": "2026-06-24T19:13:16Z",
+  "updated_at": "2026-06-25T19:13:16Z",
+  "closed_at": "2026-06-25T19:13:16Z"
+ },
+ {
+  "id": 900110,
+  "number": 110,
+  "title": "The sync service crashes with a null reference error",
+  "body": "Steps to reproduce: open the sync service and click save. Expected it to work, actual result is a crash and a stack trace.",
+  "state": "closed",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/110",
+  "created_at": "2026-06-22T16:26:49Z",
+  "updated_at": "2026-08-08T16:26:49Z",
+  "closed_at": "2026-08-08T16:26:49Z"
+ },
+ {
+  "id": 900137,
+  "number": 137,
+  "title": "Option to configure the search bar from a config file",
+  "body": "Proposal: add a new option so the search bar can be configured declaratively. Would be a nice improvement.",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "wontfix"
+   }
+  ],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/137",
+  "created_at": "2026-06-20T20:50:25Z",
+  "updated_at": "2026-06-25T19:50:25Z",
+  "closed_at": null
+ },
+ {
+  "id": 700005,
+  "number": 5,
+  "title": "Fix notification center (#5)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/5",
+  "created_at": "2026-06-19T13:27:06Z",
+  "updated_at": "2026-06-25T20:27:54Z",
+  "closed_at": "2026-06-25T20:27:54Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/5"
+  }
+ },
+ {
+  "id": 700012,
+  "number": 12,
+  "title": "Refactor file upload (#12)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/12",
+  "created_at": "2026-06-14T19:00:40Z",
+  "updated_at": "2026-06-18T11:47:57Z",
+  "closed_at": "2026-06-18T11:47:57Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/12"
+  }
+ },
+ {
+  "id": 700002,
+  "number": 2,
+  "title": "Fix API client (#2)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/2",
+  "created_at": "2026-06-13T22:39:58Z",
+  "updated_at": "2026-06-18T17:35:42Z",
+  "closed_at": "2026-06-18T17:35:42Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/2"
+  }
+ },
+ {
+  "id": 900142,
+  "number": 142,
+  "title": "Option to configure the file upload from a config file",
+  "body": "Proposal: add a new option so the file upload can be configured declaratively. Would be a nice improvement.",
+  "state": "open",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [
+   {
+    "name": "documentation"
+   }
+  ],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/142",
+  "created_at": "2026-06-10T00:34:38Z",
+  "updated_at": "2026-06-11T19:34:38Z",
+  "closed_at": null
+ },
+ {
+  "id": 900062,
+  "number": 62,
+  "title": "Slack notifications support",
+  "body": "Would love to receive notifications in our Slack workspace.",
+  "state": "open",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/62",
+  "created_at": "2026-06-09T21:56:02Z",
+  "updated_at": "2026-06-13T23:56:02Z",
+  "closed_at": null
+ },
+ {
+  "id": 900069,
+  "number": 69,
+  "title": "Which databases are supported in production?",
+  "body": "Can I use MySQL or only PostgreSQL for a production deployment?",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/69",
+  "created_at": "2026-06-07T07:08:52Z",
+  "updated_at": "2026-06-15T07:08:52Z",
+  "closed_at": "2026-06-15T07:08:52Z"
+ },
+ {
+  "id": 900154,
+  "number": 154,
+  "title": "Add support for custom themes in the settings page",
+  "body": "It would be great if the settings page supported custom themes. This enhancement would let teams match their branding.",
+  "state": "closed",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/154",
+  "created_at": "2026-06-06T20:20:52Z",
+  "updated_at": "2026-06-19T20:20:52Z",
+  "closed_at": "2026-06-19T20:20:52Z"
+ },
+ {
+  "id": 900118,
+  "number": 118,
+  "title": "Is it possible to run the login form inside Docker?",
+  "body": "Wondering whether the login form works in a container. How should I set it up? Thanks for any help or guidance.",
+  "state": "open",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "wontfix"
+   }
+  ],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/118",
+  "created_at": "2026-06-03T19:08:41Z",
+  "updated_at": "2026-06-10T00:08:41Z",
+  "closed_at": null
+ },
+ {
+  "id": 900134,
+  "number": 134,
+  "title": "Option to configure the sync service from a config file",
+  "body": "Proposal: add a new option so the sync service can be configured declaratively. Would be a nice improvement.",
+  "state": "open",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/134",
+  "created_at": "2026-06-03T02:19:19Z",
+  "updated_at": "2026-06-05T11:19:19Z",
+  "closed_at": null
+ },
+ {
+  "id": 900049,
+  "number": 49,
+  "title": "Dark mode text is unreadable in the sidebar",
+  "body": "In dark mode the sidebar labels are dark grey on black and impossible to read.",
+  "state": "closed",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/49",
+  "created_at": "2026-06-02T15:13:21Z",
+  "updated_at": "2026-06-16T15:13:21Z",
+  "closed_at": "2026-06-16T15:13:21Z"
+ },
+ {
+  "id": 900066,
+  "number": 66,
+  "title": "Support 2FA login",
+  "body": "Requesting two-factor auth (TOTP authenticator apps) for signing in.",
+  "state": "open",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/66",
+  "created_at": "2026-06-01T03:32:29Z",
+  "updated_at": "2026-06-08T22:32:29Z",
+  "closed_at": null
+ },
+ {
+  "id": 900052,
+  "number": 52,
+  "title": "Browser hangs when importing big CSV files",
+  "body": "The tab freezes when I upload a large CSV file for import.",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/52",
+  "created_at": "2026-05-31T22:04:52Z",
+  "updated_at": "2026-06-03T06:04:52Z",
+  "closed_at": null
+ },
+ {
+  "id": 900088,
+  "number": 88,
+  "title": "The markdown preview crashes with a null reference error",
+  "body": "Steps to reproduce: open the markdown preview and click save. Expected it to work, actual result is a crash and a stack trace.",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/88",
+  "created_at": "2026-05-30T19:06:57Z",
+  "updated_at": "2026-06-16T19:06:57Z",
+  "closed_at": "2026-06-16T19:06:57Z"
+ },
+ {
+  "id": 900090,
+  "number": 90,
+  "title": "Option to configure the notification center from a config file",
+  "body": "",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/90",
+  "created_at": "2026-05-27T10:05:04Z",
+  "updated_at": "2026-07-19T10:05:04Z",
+  "closed_at": "2026-07-19T10:05:04Z"
+ },
+ {
+  "id": 900129,
+  "number": 129,
+  "title": "How do I use the login form behind a corporate proxy?",
+  "body": "Question: what is the right way to run the login form behind a proxy? I could not find this in the docs. Any advice?",
+  "state": "closed",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/129",
+  "created_at": "2026-05-24T10:51:59Z",
+  "updated_at": "2026-06-09T10:51:59Z",
+  "closed_at": "2026-06-09T10:51:59Z"
+ },
+ {
+  "id": 900079,
+  "number": 79,
+  "title": "Add CSV import for contacts",
+  "body": "Let users import contacts from a CSV file instead of typing them one by one.",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "enhancement"
+   }
+  ],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/79",
+  "created_at": "2026-05-19T21:07:45Z",
+  "updated_at": "2026-06-04T21:07:45Z",
+  "closed_at": "2026-06-04T21:07:45Z"
+ },
+ {
+  "id": 900076,
+  "number": 76,
+  "title": "Project license question",
+  "body": "Under which license can I use this project commercially?",
+  "state": "open",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/76",
+  "created_at": "2026-05-18T06:22:41Z",
+  "updated_at": "2026-05-24T12:22:41Z",
+  "closed_at": null
+ },
+ {
+  "id": 900081,
+  "number": 81,
+  "title": "Allow bulk actions in the search bar",
+  "body": "",
+  "state": "open",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/81",
+  "created_at": "2026-05-17T06:54:18Z",
+  "updated_at": "2026-05-18T03:54:18Z",
+  "closed_at": null
+ },
+ {
+  "id": 900060,
+  "number": 60,
+  "title": "Configurable day for weekly report generation",
+  "body": "Feature request: pick which weekday the weekly report is generated on.",
+  "state": "open",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/60",
+  "created_at": "2026-05-15T22:49:58Z",
+  "updated_at": "2026-05-23T00:49:58Z",
+  "closed_at": null
+ },
+ {
+  "id": 900123,
+  "number": 123,
+  "title": "The keyboard shortcuts crashes with a null reference error",
+  "body": "Steps to reproduce: open the keyboard shortcuts and click save. Expected it to work, actual result is a crash and a stack trace.",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "wontfix"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/123",
+  "created_at": "2026-05-13T23:55:45Z",
+  "updated_at": "2026-05-23T23:55:45Z",
+  "closed_at": "2026-05-23T23:55:45Z"
+ },
+ {
+  "id": 900054,
+  "number": 54,
+  "title": "Accented characters break search",
+  "body": "Queries containing accents like é or ï return zero results.",
+  "state": "open",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/54",
+  "created_at": "2026-05-11T12:01:09Z",
+  "updated_at": "2026-05-15T05:01:09Z",
+  "closed_at": null
+ },
+ {
+  "id": 700010,
+  "number": 10,
+  "title": "Update plugin loader (#10)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/10",
+  "created_at": "2026-05-04T00:34:54Z",
+  "updated_at": "2026-05-12T17:26:45Z",
+  "closed_at": "2026-05-12T17:26:45Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/10"
+  }
+ },
+ {
+  "id": 900150,
+  "number": 150,
+  "title": "Error 500 from the search bar after upgrading",
+  "body": "Since the last release the search bar fails with an internal server error. Regression, it worked in the previous version.",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/150",
+  "created_at": "2026-05-02T12:56:15Z",
+  "updated_at": "2026-06-18T12:56:15Z",
+  "closed_at": "2026-06-18T12:56:15Z"
+ },
+ {
+  "id": 900149,
+  "number": 149,
+  "title": "The image resizer crashes with a null reference error",
+  "body": "Steps to reproduce: open the image resizer and click save. Expected it to work, actual result is a crash and a stack trace.",
+  "state": "open",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/149",
+  "created_at": "2026-04-30T13:04:52Z",
+  "updated_at": "2026-05-06T07:04:52Z",
+  "closed_at": null
+ },
+ {
+  "id": 700011,
+  "number": 11,
+  "title": "Fix API client (#11)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/11",
+  "created_at": "2026-04-19T18:47:56Z",
+  "updated_at": "2026-04-22T20:01:50Z",
+  "closed_at": "2026-04-22T20:01:50Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/11"
+  }
+ },
+ {
+  "id": 900077,
+  "number": 77,
+  "title": "Pagination skips items on the last page",
+  "body": "The final page of results is missing a few entries that exist in the database.",
+  "state": "closed",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 5,
+  "html_url": "https://github.com/octo/demo/issues/77",
+  "created_at": "2026-04-18T09:17:33Z",
+  "updated_at": "2026-05-17T09:17:33Z",
+  "closed_at": "2026-05-17T09:17:33Z"
+ },
+ {
+  "id": 900045,
+  "number": 45,
+  "title": "Memory usage grows without bound during long sync jobs",
+  "body": "Running a sync for several hours makes memory climb until the process is killed.",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/45",
+  "created_at": "2026-04-15T20:35:47Z",
+  "updated_at": "2026-04-17T20:35:47Z",
+  "closed_at": "2026-04-17T20:35:47Z"
+ },
+ {
+  "id": 900084,
+  "number": 84,
+  "title": "How do I use the sync service behind a corporate proxy?",
+  "body": "Question: what is the right way to run the sync service behind a proxy? I could not find this in the docs. Any advice?",
+  "state": "open",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/84",
+  "created_at": "2026-04-14T19:27:33Z",
+  "updated_at": "2026-04-17T00:27:33Z",
+  "closed_at": null
+ },
+ {
+  "id": 900071,
+  "number": 71,
+  "title": "How do I increase the upload size limit?",
+  "body": "Uploads above 10 MB are rejected; where do I raise that limit?",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/71",
+  "created_at": "2026-04-07T19:07:36Z",
+  "updated_at": "2026-04-16T19:07:36Z",
+  "closed_at": "2026-04-16T19:07:36Z"
+ },
+ {
+  "id": 700003,
+  "number": 3,
+  "title": "Refactor login form (#3)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/3",
+  "created_at": "2026-04-07T14:51:50Z",
+  "updated_at": "2026-04-12T02:51:26Z",
+  "closed_at": "2026-04-12T02:51:26Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/3"
+  }
+ },
+ {
+  "id": 900132,
+  "number": 132,
+  "title": "How do I use the keyboard shortcuts behind a corporate proxy?",
+  "body": "Question: what is the right way to run the keyboard shortcuts behind a proxy? I could not find this in the docs. Any advice?",
+  "state": "open",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "wontfix"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/132",
+  "created_at": "2026-04-03T06:11:13Z",
+  "updated_at": "2026-04-07T08:11:13Z",
+  "closed_at": null
+ },
+ {
+  "id": 900138,
+  "number": 138,
+  "title": "Is it possible to run the notification center inside Docker?",
+  "body": "Wondering whether the notification center works in a container. How should I set it up? Thanks for any help or guidance.",
+  "state": "closed",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [
+   {
+    "name": "good first issue"
+   }
+  ],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/138",
+  "created_at": "2026-03-30T05:30:14Z",
+  "updated_at": "2026-04-29T05:30:14Z",
+  "closed_at": "2026-04-29T05:30:14Z"
+ },
+ {
+  "id": 900152,
+  "number": 152,
+  "title": "Add support for custom themes in the plugin loader",
+  "body": "It would be great if the plugin loader supported custom themes. This enhancement would let teams match their branding.",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/152",
+  "created_at": "2026-03-30T04:26:10Z",
+  "updated_at": "2026-05-01T04:26:10Z",
+  "closed_at": "2026-05-01T04:26:10Z"
+ },
+ {
+  "id": 900057,
+  "number": 57,
+  "title": "Add keyboard shortcut to toggle the sidebar",
+  "body": "A shortcut such as Ctrl+B to show or hide the sidebar would speed up navigation.",
+  "state": "closed",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [
+   {
+    "name": "enhancement"
+   }
+  ],
+  "comments": 5,
+  "html_url": "https://github.com/octo/demo/issues/57",
+  "created_at": "2026-03-30T00:11:46Z",
+  "updated_at": "2026-04-02T00:11:46Z",
+  "closed_at": "2026-04-02T00:11:46Z"
+ },
+ {
+  "id": 900114,
+  "number": 114,
+  "title": "Is it possible to run the file upload inside Docker?",
+  "body": "Wondering whether the file upload works in a container. How should I set it up? Thanks for any help or guidance.",
+  "state": "closed",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   },
+   {
+    "name": "enhancement"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/114",
+  "created_at": "2026-03-24T10:47:24Z",
+  "updated_at": "2026-05-06T10:47:24Z",
+  "closed_at": "2026-05-06T10:47:24Z"
+ },
+ {
+  "id": 900059,
+  "number": 59,
+  "title": "Allow scheduling reports for a custom weekday",
+  "body": "Reports always run on Monday; let me choose another day of the week.",
+  "state": "closed",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "enhancement"
+   }
+  ],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/59",
+  "created_at": "2026-03-23T10:40:57Z",
+  "updated_at": "2026-04-11T10:40:57Z",
+  "closed_at": "2026-04-11T10:40:57Z"
+ },
+ {
+  "id": 900053,
+  "number": 53,
+  "title": "Search returns no results for words with accents",
+  "body": "Searching for café or naïve finds nothing even though matching items exist.",
+  "state": "closed",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/53",
+  "created_at": "2026-03-13T17:17:18Z",
+  "updated_at": "2026-03-17T17:17:18Z",
+  "closed_at": "2026-03-17T17:17:18Z"
+ },
+ {
+  "id": 900130,
+  "number": 130,
+  "title": "Option to configure the dark mode from a config file",
+  "body": "Proposal: add a new option so the dark mode can be configured declaratively. Would be a nice improvement.",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "good first issue"
+   }
+  ],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/130",
+  "created_at": "2026-03-13T10:19:33Z",
+  "updated_at": "2026-04-17T10:19:33Z",
+  "closed_at": "2026-04-17T10:19:33Z"
+ },
+ {
+  "id": 900095,
+  "number": 95,
+  "title": "Where does the user profile store its logs?",
+  "body": "I am trying to understand where the user profile writes log files and how to change that location. Can someone explain?",
+  "state": "open",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/95",
+  "created_at": "2026-03-12T12:58:20Z",
+  "updated_at": "2026-03-14T06:58:20Z",
+  "closed_at": null
+ },
+ {
+  "id": 700015,
+  "number": 15,
+  "title": "Fix offline mode (#15)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/15",
+  "created_at": "2026-03-08T13:07:48Z",
+  "updated_at": "2026-03-13T00:57:36Z",
+  "closed_at": "2026-03-13T00:57:36Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/15"
+  }
+ },
+ {
+  "id": 900119,
+  "number": 119,
+  "title": "Option to configure the CLI installer from a config file",
+  "body": "Proposal: add a new option so the CLI installer can be configured declaratively. Would be a nice improvement.",
+  "state": "closed",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/119",
+  "created_at": "2026-03-08T03:34:49Z",
+  "updated_at": "2026-04-06T03:34:49Z",
+  "closed_at": "2026-04-06T03:34:49Z"
+ },
+ {
+  "id": 900115,
+  "number": 115,
+  "title": "Where does the CLI installer store its logs?",
+  "body": "I am trying to understand where the CLI installer writes log files and how to change that location. Can someone explain?",
+  "state": "open",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   },
+   {
+    "name": "enhancement"
+   }
+  ],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/115",
+  "created_at": "2026-03-04T21:54:21Z",
+  "updated_at": "2026-03-08T05:54:21Z",
+  "closed_at": null
+ },
+ {
+  "id": 900144,
+  "number": 144,
+  "title": "Is it possible to run the user profile inside Docker?",
+  "body": "",
+  "state": "open",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "documentation"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/144",
+  "created_at": "2026-03-04T03:39:08Z",
+  "updated_at": "2026-03-08T09:39:08Z",
+  "closed_at": null
+ },
+ {
+  "id": 900133,
+  "number": 133,
+  "title": "Add support for custom themes in the keyboard shortcuts",
+  "body": "It would be great if the keyboard shortcuts supported custom themes. This enhancement would let teams match their branding.",
+  "state": "open",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "good first issue"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/133",
+  "created_at": "2026-02-26T23:16:17Z",
+  "updated_at": "2026-03-04T17:16:17Z",
+  "closed_at": null
+ },
+ {
+  "id": 900160,
+  "number": 160,
+  "title": "Add support for custom themes in the login form",
+  "body": "It would be great if the login form supported custom themes. This enhancement would let teams match their branding.",
+  "state": "closed",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/160",
+  "created_at": "2026-02-26T01:13:01Z",
+  "updated_at": "2026-03-10T01:13:01Z",
+  "closed_at": "2026-03-10T01:13:01Z"
+ },
+ {
+  "id": 700007,
+  "number": 7,
+  "title": "Update login form (#7)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/7",
+  "created_at": "2026-02-24T02:44:00Z",
+  "updated_at": "2026-02-26T14:25:15Z",
+  "closed_at": "2026-02-26T14:25:15Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/7"
+  }
+ },
+ {
+  "id": 900108,
+  "number": 108,
+  "title": "Error 500 from the offline mode after upgrading",
+  "body": "",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/108",
+  "created_at": "2026-02-19T09:38:00Z",
+  "updated_at": "2026-03-24T09:38:00Z",
+  "closed_at": "2026-03-24T09:38:00Z"
+ },
+ {
+  "id": 900063,
+  "number": 63,
+  "title": "Provide a REST endpoint to list all projects",
+  "body": "An API endpoint returning every project would help automation scripts.",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "enhancement"
+   }
+  ],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/63",
+  "created_at": "2026-02-18T22:54:06Z",
+  "updated_at": "2026-03-05T22:54:06Z",
+  "closed_at": "2026-03-05T22:54:06Z"
+ },
+ {
+  "id": 900092,
+  "number": 92,
+  "title": "Is it possible to run the keyboard shortcuts inside Docker?",
+  "body": "Wondering whether the keyboard shortcuts works in a container. How should I set it up? Thanks for any help or guidance.",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/92",
+  "created_at": "2026-02-16T18:28:09Z",
+  "updated_at": "2026-03-02T18:28:09Z",
+  "closed_at": "2026-03-02T18:28:09Z"
+ },
+ {
+  "id": 900065,
+  "number": 65,
+  "title": "Two-factor authentication for accounts",
+  "body": "Add optional 2FA with an authenticator app to improve account security.",
+  "state": "closed",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "enhancement"
+   }
+  ],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/65",
+  "created_at": "2026-02-14T16:24:49Z",
+  "updated_at": "2026-03-09T16:24:49Z",
+  "closed_at": "2026-03-09T16:24:49Z"
+ },
+ {
+  "id": 700008,
+  "number": 8,
+  "title": "Add search bar (#8)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/8",
+  "created_at": "2026-02-13T17:49:40Z",
+  "updated_at": "2026-02-20T04:59:28Z",
+  "closed_at": "2026-02-20T04:59:28Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/8"
+  }
+ },
+ {
+  "id": 900091,
+  "number": 91,
+  "title": "Option to configure the markdown preview from a config file",
+  "body": "Proposal: add a new option so the markdown preview can be configured declaratively. Would be a nice improvement.",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/91",
+  "created_at": "2026-02-13T17:00:03Z",
+  "updated_at": "2026-02-20T17:00:03Z",
+  "closed_at": "2026-02-20T17:00:03Z"
+ },
+ {
+  "id": 700004,
+  "number": 4,
+  "title": "Add PDF export (#4)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/4",
+  "created_at": "2026-02-07T09:18:26Z",
+  "updated_at": "2026-02-11T16:07:34Z",
+  "closed_at": "2026-02-11T16:07:34Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/4"
+  }
+ },
+ {
+  "id": 900141,
+  "number": 141,
+  "title": "Notification center shows broken values when locale is German",
+  "body": "The notification center renders wrong numbers and garbled text with a German locale. Bug reproducible every time.",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/141",
+  "created_at": "2026-02-07T00:50:50Z",
+  "updated_at": "2026-02-09T00:50:50Z",
+  "closed_at": "2026-02-09T00:50:50Z"
+ },
+ {
+  "id": 900067,
+  "number": 67,
+  "title": "How can I migrate data from version 1 to version 2?",
+  "body": "What is the supported upgrade path for existing data when moving to v2?",
+  "state": "closed",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 4,
+  "html_url": "https://github.com/octo/demo/issues/67",
+  "created_at": "2026-02-06T01:48:11Z",
+  "updated_at": "2026-02-12T01:48:11Z",
+  "closed_at": "2026-02-12T01:48:11Z"
+ },
+ {
+  "id": 900102,
+  "number": 102,
+  "title": "How do I use the dark mode behind a corporate proxy?",
+  "body": "Question: what is the right way to run the dark mode behind a proxy? I could not find this in the docs. Any advice?",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/102",
+  "created_at": "2026-02-02T22:33:06Z",
+  "updated_at": "2026-02-07T08:33:06Z",
+  "closed_at": null
+ },
+ {
+  "id": 900061,
+  "number": 61,
+  "title": "Integrate with Slack for notifications",
+  "body": "Send alerts to a Slack channel when something important happens.",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "enhancement"
+   }
+  ],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/61",
+  "created_at": "2026-01-30T12:09:57Z",
+  "updated_at": "2026-02-24T12:09:57Z",
+  "closed_at": "2026-02-24T12:09:57Z"
+ },
+ {
+  "id": 900140,
+  "number": 140,
+  "title": "The dark mode crashes with a null reference error",
+  "body": "Steps to reproduce: open the dark mode and click save. Expected it to work, actual result is a crash and a stack trace.",
+  "state": "open",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "good first issue"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/140",
+  "created_at": "2026-01-29T01:54:07Z",
+  "updated_at": "2026-01-29T12:54:07Z",
+  "closed_at": null
+ },
+ {
+  "id": 900073,
+  "number": 73,
+  "title": "Can I run the CLI on Windows?",
+  "body": "Does the command line tool work on Windows or only Linux and macOS?",
+  "state": "closed",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 4,
+  "html_url": "https://github.com/octo/demo/issues/73",
+  "created_at": "2026-01-24T13:49:22Z",
+  "updated_at": "2026-02-14T13:49:22Z",
+  "closed_at": "2026-02-14T13:49:22Z"
+ },
+ {
+  "id": 900106,
+  "number": 106,
+  "title": "Option to configure the dashboard charts from a config file",
+  "body": "Proposal: add a new option so the dashboard charts can be configured declaratively. Would be a nice improvement.",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/106",
+  "created_at": "2026-01-19T12:09:12Z",
+  "updated_at": "2026-01-21T22:09:12Z",
+  "closed_at": null
+ },
+ {
+  "id": 900145,
+  "number": 145,
+  "title": "Where does the keyboard shortcuts store its logs?",
+  "body": "I am trying to understand where the keyboard shortcuts writes log files and how to change that location. Can someone explain?",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/145",
+  "created_at": "2026-01-19T00:34:03Z",
+  "updated_at": "2026-03-05T00:34:03Z",
+  "closed_at": "2026-03-05T00:34:03Z"
+ },
+ {
+  "id": 900051,
+  "number": 51,
+  "title": "Uploading a large CSV freezes the browser tab",
+  "body": "Importing a CSV over 50 MB hangs the page completely.",
+  "state": "closed",
+  "user": {
+   "login": "carol"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 4,
+  "html_url": "https://github.com/octo/demo/issues/51",
+  "created_at": "2026-01-04T00:07:57Z",
+  "updated_at": "2026-01-27T00:07:57Z",
+  "closed_at": "2026-01-27T00:07:57Z"
+ },
+ {
+  "id": 900105,
+  "number": 105,
+  "title": "The CSV export crashes with a null reference error",
+  "body": "Steps to reproduce: open the CSV export and click save. Expected it to work, actual result is a crash and a stack trace.",
+  "state": "open",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/105",
+  "created_at": "2026-01-03T19:49:53Z",
+  "updated_at": "2026-01-06T04:49:53Z",
+  "closed_at": null
+ },
+ {
+  "id": 900075,
+  "number": 75,
+  "title": "What license is the project released under?",
+  "body": "I need to know the license before using this at work.",
+  "state": "closed",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 5,
+  "html_url": "https://github.com/octo/demo/issues/75",
+  "created_at": "2025-12-27T05:26:56Z",
+  "updated_at": "2026-01-04T05:26:56Z",
+  "closed_at": "2026-01-04T05:26:56Z"
+ },
+ {
+  "id": 900043,
+  "number": 43,
+  "title": "Login fails after the session cookie expires",
+  "body": "When my session expires I cannot log in again until I clear cookies manually.",
+  "state": "closed",
+  "user": {
+   "login": "frank"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/43",
+  "created_at": "2025-12-27T04:35:15Z",
+  "updated_at": "2026-01-20T04:35:15Z",
+  "closed_at": "2026-01-20T04:35:15Z"
+ },
+ {
+  "id": 900109,
+  "number": 109,
+  "title": "Add support for custom themes in the image resizer",
+  "body": "It would be great if the image resizer supported custom themes. This enhancement would let teams match their branding.",
+  "state": "open",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/109",
+  "created_at": "2025-12-17T19:03:46Z",
+  "updated_at": "2025-12-18T23:03:46Z",
+  "closed_at": null
+ },
+ {
+  "id": 900094,
+  "number": 94,
+  "title": "Add support for custom themes in the dark mode",
+  "body": "It would be great if the dark mode supported custom themes. This enhancement would let teams match their branding.",
+  "state": "open",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "feature"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/94",
+  "created_at": "2025-12-08T20:17:02Z",
+  "updated_at": "2025-12-08T21:17:02Z",
+  "closed_at": null
+ },
+ {
+  "id": 700013,
+  "number": 13,
+  "title": "Fix file upload (#13)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/13",
+  "created_at": "2025-12-08T10:26:27Z",
+  "updated_at": "2025-12-14T02:58:41Z",
+  "closed_at": "2025-12-14T02:58:41Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/13"
+  }
+ },
+ {
+  "id": 900151,
+  "number": 151,
+  "title": "Image resizer shows broken values when locale is German",
+  "body": "The image resizer renders wrong numbers and garbled text with a German locale. Bug reproducible every time.",
+  "state": "closed",
+  "user": {
+   "login": "erin"
+  },
+  "labels": [],
+  "comments": 3,
+  "html_url": "https://github.com/octo/demo/issues/151",
+  "created_at": "2025-12-06T15:45:24Z",
+  "updated_at": "2026-01-04T15:45:24Z",
+  "closed_at": "2026-01-04T15:45:24Z"
+ },
+ {
+  "id": 700006,
+  "number": 6,
+  "title": "Fix sync service (#6)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/6",
+  "created_at": "2025-12-04T12:43:19Z",
+  "updated_at": "2025-12-08T14:37:10Z",
+  "closed_at": "2025-12-08T14:37:10Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/6"
+  }
+ },
+ {
+  "id": 900097,
+  "number": 97,
+  "title": "Is it possible to run the webhook handler inside Docker?",
+  "body": "Wondering whether the webhook handler works in a container. How should I set it up? Thanks for any help or guidance.",
+  "state": "open",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/97",
+  "created_at": "2025-12-02T05:19:24Z",
+  "updated_at": "2025-12-08T01:19:24Z",
+  "closed_at": null
+ },
+ {
+  "id": 700001,
+  "number": 1,
+  "title": "Update dark mode (#1)",
+  "body": "PR body",
+  "state": "closed",
+  "user": {
+   "login": "bob"
+  },
+  "labels": [],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/pull/1",
+  "created_at": "2025-11-20T16:14:13Z",
+  "updated_at": "2025-11-22T16:16:54Z",
+  "closed_at": "2025-11-22T16:16:54Z",
+  "pull_request": {
+   "url": "https://api.github.com/repos/octo/demo/pulls/1"
+  }
+ },
+ {
+  "id": 900099,
+  "number": 99,
+  "title": "Is it possible to run the search bar inside Docker?",
+  "body": "",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/99",
+  "created_at": "2025-11-19T05:52:23Z",
+  "updated_at": "2026-01-16T05:52:23Z",
+  "closed_at": "2026-01-16T05:52:23Z"
+ },
+ {
+  "id": 900098,
+  "number": 98,
+  "title": "Where does the offline mode store its logs?",
+  "body": "I am trying to understand where the offline mode writes log files and how to change that location. Can someone explain?",
+  "state": "open",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "question"
+   }
+  ],
+  "comments": 1,
+  "html_url": "https://github.com/octo/demo/issues/98",
+  "created_at": "2025-11-16T23:48:23Z",
+  "updated_at": "2025-11-18T08:48:23Z",
+  "closed_at": null
+ },
+ {
+  "id": 900135,
+  "number": 135,
+  "title": "Webhook handler shows broken values when locale is German",
+  "body": "",
+  "state": "closed",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "wontfix"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/135",
+  "created_at": "2025-11-14T06:31:51Z",
+  "updated_at": "2025-12-27T06:31:51Z",
+  "closed_at": "2025-12-27T06:31:51Z"
+ },
+ {
+  "id": 900103,
+  "number": 103,
+  "title": "Sync service shows broken values when locale is German",
+  "body": "The sync service renders wrong numbers and garbled text with a German locale. Bug reproducible every time.",
+  "state": "closed",
+  "user": {
+   "login": "dave"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/103",
+  "created_at": "2025-11-12T15:01:32Z",
+  "updated_at": "2025-12-04T15:01:32Z",
+  "closed_at": "2025-12-04T15:01:32Z"
+ },
+ {
+  "id": 900107,
+  "number": 107,
+  "title": "Error 500 from the PDF export after upgrading",
+  "body": "Since the last release the PDF export fails with an internal server error. Regression, it worked in the previous version.",
+  "state": "open",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 2,
+  "html_url": "https://github.com/octo/demo/issues/107",
+  "created_at": "2025-11-12T04:34:06Z",
+  "updated_at": "2025-11-20T10:34:06Z",
+  "closed_at": null
+ },
+ {
+  "id": 900087,
+  "number": 87,
+  "title": "Error 500 from the dark mode after upgrading",
+  "body": "Since the last release the dark mode fails with an internal server error. Regression, it worked in the previous version.",
+  "state": "closed",
+  "user": {
+   "login": "alice"
+  },
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "comments": 0,
+  "html_url": "https://github.com/octo/demo/issues/87",
+  "created_at": "2025-11-06T14:49:34Z",
+  "updated_at": "2025-12-13T14:49:34Z",
+  "closed_at": "2025-12-13T14:49:34Z"
+ }
+]

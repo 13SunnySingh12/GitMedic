@@ -1,0 +1,26 @@
+[
+ {
+  "id": 123456,
+  "full_name": "octo/demo",
+  "name": "demo",
+  "owner": {
+   "login": "octo"
+  },
+  "private": false,
+  "default_branch": "main",
+  "html_url": "https://github.com/octo/demo",
+  "description": "Synthetic fixture repository"
+ },
+ {
+  "id": 654321,
+  "full_name": "octo/other",
+  "name": "other",
+  "owner": {
+   "login": "octo"
+  },
+  "private": false,
+  "default_branch": "main",
+  "html_url": "https://github.com/octo/other",
+  "description": "Synthetic fixture repository"
+ }
+]

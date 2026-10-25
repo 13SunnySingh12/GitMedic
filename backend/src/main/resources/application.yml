@@ -1,0 +1,63 @@
+# Required values have no default: a missing one fails startup naming the variable (QA-CFG-01).
+spring:
+  application:
+    name: gitmedic
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 5
+  flyway:
+    schemas: gitmedic
+    default-schema: gitmedic
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            scope: ${GITHUB_SCOPES:read:user}
+        provider:
+          github:
+            authorization-uri: ${gitmedic.github-web-url}/login/oauth/authorize
+            token-uri: ${gitmedic.github-web-url}/login/oauth/access_token
+            user-info-uri: ${gitmedic.github-api-url}/user
+  task:
+    execution:
+      pool:
+        core-size: 2
+        max-size: 2
+        queue-capacity: 10
+      thread-name-prefix: gm-job-
+
+server:
+  port: 8080
+  error:
+    include-stacktrace: never
+    include-message: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+gitmedic:
+  frontend-origin: ${FRONTEND_ORIGIN}
+  jwt-secret: ${JWT_SECRET}
+  jwt-ttl-minutes: ${JWT_TTL_MINUTES:480}
+  token-encryption-key: ${TOKEN_ENCRYPTION_KEY}
+  webhook-secret: ${GITHUB_WEBHOOK_SECRET:}
+  ml-base-url: ${ML_BASE_URL}
+  internal-api-token: ${INTERNAL_API_TOKEN}
+  timezone: ${APP_TIMEZONE:UTC}
+  report-cron: ${REPORT_CRON:0 0 6 * * MON}
+  github-api-url: https://api.github.com
+  github-web-url: https://github.com
