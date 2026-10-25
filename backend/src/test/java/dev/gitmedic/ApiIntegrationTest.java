@@ -31,12 +31,15 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -66,9 +69,25 @@ class ApiIntegrationTest {
   @Autowired SyncStore store;
   @Autowired AnalyticsService analytics;
 
+  @Autowired
+  @Qualifier("applicationTaskExecutor")
+  ThreadPoolTaskExecutor jobs;
+
   long userId;
   long repoId;
   Cookie cookie;
+
+  /**
+   * Webhook tests leave ML follow-up work on the job executor. If it ran after WireMock resets its
+   * stubs, the 404 would open MlClient's circuit breaker and fail the next tests, so every test
+   * waits for that work to finish.
+   */
+  @AfterEach
+  void drainBackgroundJobs() {
+    await(
+        () -> jobs.getActiveCount() == 0 && jobs.getThreadPoolExecutor().getQueue().isEmpty(),
+        "background jobs to finish");
+  }
 
   @BeforeEach
   void setUp() {
