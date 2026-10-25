@@ -272,7 +272,8 @@ public class MlService {
                 + " values (?, ?, ?, ?, ?::jsonb)")
         .params(
             repoId,
-            ts(clock.instant()),
+            // History is keyed by the as-of time, so a late (catch-up) report files correctly.
+            ts(asOf.isAfter(clock.instant()) ? clock.instant() : asOf),
             r.path("score").asInt(),
             r.path("level").asString(),
             mapper.writeValueAsString(r.path("components")))
