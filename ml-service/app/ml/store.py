@@ -31,13 +31,20 @@ def save(model_dir: Path, repo_id: int, name: str, model: Any, meta: dict[str, A
     tmp = d / f"{name}.joblib.tmp"
     joblib.dump(model, tmp)
     tmp.replace(d / f"{name}.joblib")
-    (d / f"{name}.meta.json").write_text(json.dumps(meta), encoding="utf-8")
+    tmp_meta = d / f"{name}.meta.json.tmp"
+    tmp_meta.write_text(json.dumps(meta), encoding="utf-8")
+    tmp_meta.replace(d / f"{name}.meta.json")
     return meta
 
 
 def meta(model_dir: Path, repo_id: int, name: str) -> dict[str, Any] | None:
+    """The model's metadata; None when missing or unreadable (both mean: train again)."""
     p = repo_dir(model_dir, repo_id) / f"{name}.meta.json"
-    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
+    try:
+        m = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return m if isinstance(m, dict) else None
 
 
 def load(model_dir: Path, repo_id: int, name: str) -> tuple[Any, dict[str, Any]]:
@@ -55,7 +62,12 @@ def load(model_dir: Path, repo_id: int, name: str) -> tuple[Any, dict[str, Any]]
     mtime = path.stat().st_mtime
     cached = _cache.get(path)
     if cached is None or cached[0] != mtime:
-        cached = (mtime, joblib.load(path))  # noqa: S301 - only service-written files (SEC-14)
+        try:
+            cached = (mtime, joblib.load(path))  # noqa: S301 - only service-written files (SEC-14)
+        except Exception as e:  # a truncated or damaged file: same answer as no model
+            raise MLError(
+                422, "MODEL_NOT_TRAINED", f"The {name} model file is unreadable; retrain."
+            ) from e
         _cache[path] = cached
     return cached[1], m
 

@@ -1,8 +1,12 @@
 """QA-SEC-07 (internal token), QA-SEC-13 (model paths), QA-SEC-14 (DB roles), QA-VAL-*."""
 
+import json
+
 import psycopg
 import pytest
 
+from app.core.errors import MLError
+from app.ml import store
 from app.ml.store import repo_dir
 from tests.conftest import TEST_DSN
 
@@ -91,6 +95,24 @@ def test_qa_sec_13_model_paths_only_from_positive_ints(tmp_path):
     for bad in (0, -1, True, "7", 1.5):
         with pytest.raises(ValueError):
             repo_dir(tmp_path, bad)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize(
+    ("meta", "model"),
+    [("{not json", b"x"), ('{"sklearn_version": "0"}', b"x"), (None, b"not a pickle")],
+)
+def test_damaged_model_files_mean_retrain_not_500(tmp_path, meta, model):
+    d = repo_dir(tmp_path, 9)
+    d.mkdir()
+    (d / "label.joblib").write_bytes(model)
+    if meta is None:
+        import sklearn
+
+        meta = json.dumps({"sklearn_version": sklearn.__version__})
+    (d / "label.meta.json").write_text(meta, encoding="utf-8")
+    with pytest.raises(MLError) as e:
+        store.load(tmp_path, 9, "label")
+    assert (e.value.status, e.value.code) == (422, "MODEL_NOT_TRAINED")
 
 
 @pytest.mark.parametrize(

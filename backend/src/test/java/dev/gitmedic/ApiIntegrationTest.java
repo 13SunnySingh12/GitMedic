@@ -17,6 +17,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import dev.gitmedic.analytics.AnalyticsService;
 import dev.gitmedic.auth.JwtService;
 import dev.gitmedic.auth.TokenCipher;
+import dev.gitmedic.ml.MlService;
 import dev.gitmedic.support.Seed;
 import dev.gitmedic.support.TestSupport;
 import dev.gitmedic.sync.SyncStore;
@@ -25,7 +26,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -68,6 +71,7 @@ class ApiIntegrationTest {
   @Autowired JwtService jwt;
   @Autowired SyncStore store;
   @Autowired AnalyticsService analytics;
+  @Autowired MlService mlService;
 
   @Autowired
   @Qualifier("applicationTaskExecutor")
@@ -438,6 +442,46 @@ class ApiIntegrationTest {
         .andExpect(status().isUnprocessableContent())
         .andExpect(jsonPath("$.code").value("INSUFFICIENT_TRAINING_DATA"));
     mvc.perform(train("nonsense")).andExpect(status().isNotFound());
+  }
+
+  @Test
+  void mlRequestsStayUnderFastApisTwoMegabyteLimit() {
+    // Long non-ASCII issue bodies (3 bytes per char in UTF-8) and 200 KiB documents.
+    jdbc.sql("update gitmedic.issues set state = 'open', body = ? where repo_id = ?")
+        .params("あ".repeat(60_000), repoId)
+        .update();
+    long open = count("select count(*) from gitmedic.issues where repo_id = ?", repoId);
+    ml.stubFor(
+        WireMock.post("/internal/v1/predict/label")
+            .willReturn(WireMock.okJson("{\"predictions\":[]}")));
+    List<MlService.Document> docs = new ArrayList<>();
+    for (int i = 0; i < 6; i++) {
+      docs.add(new MlService.Document("doc", "docs/" + i + ".md", "u", "あ".repeat(200 * 1024)));
+    }
+
+    mlService.predictLabels(repoId, true);
+    mlService.index(repoId, docs);
+
+    int sent = 0;
+    for (var r : ml.findAll(postRequestedFor(urlPathEqualTo("/internal/v1/predict/label")))) {
+      assertThat(r.getBody().length).isLessThanOrEqualTo(2 * 1024 * 1024);
+      for (JsonNode issue : TestSupport.JSON.readTree(r.getBody()).path("issues")) {
+        assertThat(issue.path("body").asString().length()).isLessThanOrEqualTo(8000);
+        sent++;
+      }
+    }
+    assertThat(sent).isEqualTo(open);
+    int indexed = 0;
+    for (var r : ml.findAll(postRequestedFor(urlPathEqualTo("/internal/v1/index")))) {
+      assertThat(r.getBody().length).isLessThanOrEqualTo(2 * 1024 * 1024);
+      indexed += TestSupport.JSON.readTree(r.getBody()).path("documents").size();
+    }
+    assertThat(indexed).isEqualTo(docs.size());
+
+    // GitHub allows 65,536-character bodies; FastAPI caps them at 65,535 and only reads 1,500.
+    mlService.duplicates(repoId, 1, "t", "x".repeat(65_536));
+    var dup = ml.findAll(postRequestedFor(urlPathEqualTo("/internal/v1/duplicates"))).getLast();
+    assertThat(TestSupport.JSON.readTree(dup.getBody()).path("body").asString()).hasSize(1500);
   }
 
   @Test

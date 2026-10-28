@@ -119,3 +119,15 @@ def test_suggest_without_material_says_insufficient_context(client, db):
     )
     assert r.json()["sources"] == []
     assert r.json()["draft"].startswith("Insufficient context")
+
+
+def test_index_accepts_a_document_at_the_200_kib_doc_cap(client, db):
+    # BR-13 lets Spring send docs of up to 200 KiB; an ASCII one has that many characters.
+    repo = make_repo(db)
+    doc = {**_readme(), "text": "# Big\n\n" + "word " * (200 * 1024 // 5 - 2)}
+    assert len(doc["text"]) <= 200 * 1024
+    r = client.post("/internal/v1/index", json={"repo_id": repo, "documents": [doc]})
+    assert r.status_code == 200, r.text
+    too_big = {**doc, "text": "x" * (200 * 1024 + 1)}
+    r = client.post("/internal/v1/index", json={"repo_id": repo, "documents": [too_big]})
+    assert r.status_code == 400

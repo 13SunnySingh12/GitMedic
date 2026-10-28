@@ -1,7 +1,7 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { describe, expect, test } from 'vitest';
+import { beforeAll, describe, expect, test } from 'vitest';
 import { RiskBadge } from '../components/Status.jsx';
 import { calendarDays } from '../components/Heatmap.jsx';
 import { safeNext } from '../api/client.js';
@@ -254,6 +254,10 @@ describe('issues', () => {
 });
 
 describe('dashboard', () => {
+  // The dashboard is lazy-loaded with the charting library. Transforming it cold can take longer
+  // than a findBy wait on a busy machine, so load it once here, outside the assertions.
+  beforeAll(() => import('../pages/Dashboard.jsx'), 60000);
+
   test('widgets render independently: heatmap error does not hide risk; ML down is explained', async () => {
     server.use(
       http.get('/api/v1/repos/7/dashboard', () =>

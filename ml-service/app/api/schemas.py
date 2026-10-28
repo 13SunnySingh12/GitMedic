@@ -46,7 +46,7 @@ class Document(BaseModel):
     source_type: Literal["readme", "doc", "issue"]
     source_ref: str = Field(min_length=1, max_length=500)
     source_url: str = Field(min_length=1, max_length=2000)
-    text: str = Field(max_length=200_000)
+    text: str = Field(max_length=200 * 1024)  # BR-13: Spring sends docs of at most 200 KiB
 
 
 class IndexRequest(BaseModel):

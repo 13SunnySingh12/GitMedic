@@ -749,7 +749,7 @@ API-21: `Content-Type: text/markdown; charset=utf-8` or `text/html; charset=utf-
 API-22: headers `X-GitHub-Event`, `X-GitHub-Delivery`, `X-Hub-Signature-256`. Verify `sha256=HMAC(secret, rawBody)` with constant-time compare **before** parsing. Responses: 200/202 processed, 204 ignored (untracked repo or unsupported event/action), 401 bad signature, 400 malformed JSON. Handled actions [P]: `issues` (opened, edited, closed, reopened, labeled, unlabeled, deleted), `pull_request` (opened, edited, closed, reopened, synchronize), `push` (commits on default branch only).
 
 ### 7.3 FastAPI internal endpoints
-All require `X-Internal-Token`; bound to `127.0.0.1`; request body ≤ 2 MB.
+All require `X-Internal-Token`; bound to `127.0.0.1`; request body ≤ 2 MB. Spring splits ML-03 and ML-07 calls into batches whose JSON stays under that limit, sends at most 8,000 body characters to ML-03 and 1,500 to ML-08/ML-09 (all the service reads), and ML-07 accepts document text up to 200 KiB (BR-13). A damaged or unreadable model file is reported as 422 `MODEL_NOT_TRAINED` (retrain).
 | ID | Method & path | Request | Response |
 |---|---|---|---|
 | ML-01 | GET `/health` (no token) | — | `{status, db, embedder_loaded}` |
@@ -1249,6 +1249,7 @@ A-1 Personas (§1.2) · A-2 Supabase Free lacks guaranteed backups · A-3 Supaba
 | 1.0.0 | 2026-10 | Initial specification |
 | 1.1.0 | 2026-10-25 | Added ML-11 (model status + training readiness). Spring data access uses `JdbcClient` instead of JPA: natural-key upserts (`ON CONFLICT`), `text[]`, `jsonb` and `vector` columns are plain SQL. Report "Generate now" accepts `{"period":"current"|"previous"}` (default current) and regenerating a period replaces it. Risk history rows are keyed by the as-of time. Dev-only `seed` profile. `GITMEDIC_ENV_FILE` selects the backend env file (default `.env`). TBD resolutions above |
 | 1.1.1 | 2026-10-26 | Audit fixes: GitHub `Link` pagination only followed on the configured API origin (the user token could otherwise go to another host); API request bodies capped at 64 KB (413 `PAYLOAD_TOO_LARGE`); public health shows statuses only, with ML as a non-fatal component; incremental commit sync overlaps the previous sync by 7 days; the add-repository picker caches the GitHub repo list per user for 60 s; suggested-answer Markdown renders no images; GitHub links accept http(s) only; setuptools 84.2.1 pinned (runtime dependency of torch with known advisories); database dumps gitignored. NFR-003 measured (Appendix A) |
+| 1.1.2 | 2026-10-29 | Audit fixes: ML request bodies are batched by serialized UTF-8 size instead of item or character counts, so a sync of a repository with long or non-ASCII issue bodies no longer fails with 413/422 from FastAPI; issue bodies sent to the ML service are trimmed to what it reads; ML-07 document limit raised from 200,000 characters to 200 KiB to match BR-13; model metadata is written atomically and unreadable model or metadata files mean "retrain" (422) instead of a 500 |
 
 ---
 
