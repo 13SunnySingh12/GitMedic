@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from 'react';
+import { motion } from 'motion/react';
 
 /**
  * Native <dialog> as a modal: the browser provides focus trapping, Escape to close and the
@@ -34,7 +35,7 @@ export function Dialog({ open, onClose, title, children }) {
       }}
     >
       {open && (
-        <>
+        <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
           <div className="dialog-head">
             <h2 id={titleId}>{title}</h2>
             <button type="button" className="btn btn-small" onClick={onClose}>
@@ -42,7 +43,7 @@ export function Dialog({ open, onClose, title, children }) {
             </button>
           </div>
           {children}
-        </>
+        </motion.div>
       )}
     </dialog>
   );

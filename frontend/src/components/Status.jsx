@@ -72,8 +72,9 @@ export function QueryState({ query, empty, isEmpty, skeleton = 120, children }) 
 export function Prediction({ label, confidence }) {
   if (!label) return <span className="muted">Not predicted</span>;
   return (
-    <span title="Predicted by this repository's label model">
-      {label} <span className="muted small">(predicted, {Math.round(confidence * 100)}%)</span>
+    <span className="row" style={{ gap: 6 }} title="Predicted by this repository's label model">
+      <span className="badge badge-lavender">{label}</span>
+      <span className="muted small">(predicted, {Math.round(confidence * 100)}%)</span>
     </span>
   );
 }

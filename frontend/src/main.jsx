@@ -5,6 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import App from './App.jsx';
 import { setUnauthenticatedHandler } from './api/client.js';
 import { createQueryClient } from './queryClient.js';
+import '@fontsource-variable/inter';
 import './index.css';
 
 const queryClient = createQueryClient();

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import Markdown from 'react-markdown';
 import { useIssue } from '../api/hooks.js';
-import { GitHubLink, RepoNav } from '../components/Layout.jsx';
+import { GitHubLink, PageHeader } from '../components/Layout.jsx';
 import { Prediction, QueryState } from '../components/Status.jsx';
 import { date } from '../utils/format.js';
 
@@ -11,18 +11,23 @@ function Duplicates({ items }) {
     return <p className="muted">No similar issues found.</p>;
   }
   return (
-    <ul className="sources">
+    <ol className="rank-list">
       {items.map((d) => (
         <li key={d.number}>
-          <GitHubLink href={d.htmlUrl}>
-            #{d.number} {d.title}
-          </GitHubLink>
-          <div className="muted small">
-            {d.state}, similarity {d.score.toFixed(2)} (0 to 1; higher means more alike)
-          </div>
+          <span className="rank-main">
+            <strong>
+              <GitHubLink href={d.htmlUrl}>
+                #{d.number} {d.title}
+              </GitHubLink>
+            </strong>
+            <span className="muted small">
+              {d.state}, similarity {d.score.toFixed(2)} (0 to 1; higher means more alike)
+            </span>
+          </span>
+          <span className="badge">{d.score.toFixed(2)}</span>
         </li>
       ))}
-    </ul>
+    </ol>
   );
 }
 
@@ -81,41 +86,51 @@ export default function IssueDetail() {
 
   return (
     <>
-      <p className="small" style={{ marginBottom: 8 }}>
-        <Link to={`/repos/${repoId}/issues`}>Back to issues</Link>
-      </p>
+      {!issue.isSuccess && (
+        <p className="crumb" style={{ marginBottom: 16 }}>
+          <Link to={`/repos/${repoId}/issues`}>Back to issues</Link>
+        </p>
+      )}
       <QueryState query={issue} skeleton={240}>
         {(d) => (
           <>
-            <div className="page-head">
-              <div className="stack" style={{ gap: 6 }}>
-                <h1>
+            <PageHeader
+              crumb={<Link to={`/repos/${repoId}/issues`}>Back to issues</Link>}
+              title={
+                <>
                   {d.issue.title} <span className="muted">#{d.issue.number}</span>
-                </h1>
-                <div className="row small">
+                </>
+              }
+              meta={
+                <span className="row">
                   <span className="badge">{d.issue.state}</span>
-                  <span className="muted">
+                  <span>
                     Opened {date(d.issue.createdAt)}
                     {d.issue.authorLogin ? ` by ${d.issue.authorLogin}` : ''}
                   </span>
                   <GitHubLink href={d.issue.htmlUrl}>View on GitHub</GitHubLink>
-                </div>
-              </div>
-            </div>
-            <RepoNav />
-            <div className="grid grid-dash">
-              <section className="panel span-12" aria-labelledby="labels-h">
-                <h2 id="labels-h">Labels</h2>
-                <div className="row">
-                  <span>
+                </span>
+              }
+            />
+            <div className="grid-2">
+              <section className="card span-all" aria-labelledby="labels-h">
+                <h2 id="labels-h" className="card-title">
+                  Labels
+                </h2>
+                <div className="row" style={{ gap: '10px 32px' }}>
+                  <span className="row" style={{ gap: 8 }}>
                     On GitHub:{' '}
                     {d.issue.ghLabels.length ? (
-                      d.issue.ghLabels.join(', ')
+                      d.issue.ghLabels.map((l) => (
+                        <span key={l} className="badge">
+                          {l}
+                        </span>
+                      ))
                     ) : (
                       <span className="muted">none</span>
                     )}
                   </span>
-                  <span>
+                  <span className="row" style={{ gap: 8 }}>
                     Model:{' '}
                     <Prediction
                       label={d.issue.predictedLabel}
@@ -125,18 +140,22 @@ export default function IssueDetail() {
                 </div>
               </section>
               {d.mlStatus === 'UNAVAILABLE' ? (
-                <p className="notice notice-warn span-12">
+                <p className="notice notice-warn span-all">
                   The ML service is unavailable, so similar issues and a suggested answer cannot be
                   shown right now.
                 </p>
               ) : (
                 <>
-                  <section className="panel span-6" aria-labelledby="dups-h">
-                    <h2 id="dups-h">Possible duplicates</h2>
+                  <section className="card" aria-labelledby="dups-h">
+                    <h2 id="dups-h" className="card-title">
+                      Possible duplicates
+                    </h2>
                     <Duplicates items={d.duplicates} />
                   </section>
-                  <section className="panel span-6" aria-labelledby="answer-h">
-                    <h2 id="answer-h">Suggested answer</h2>
+                  <section className="card" aria-labelledby="answer-h">
+                    <h2 id="answer-h" className="card-title">
+                      Suggested answer
+                    </h2>
                     <SuggestedAnswer answer={d.suggestedAnswer} />
                   </section>
                 </>

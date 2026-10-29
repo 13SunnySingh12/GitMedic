@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useParams } from 'react-router';
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useBusFactor, useDashboard, useHeatmap, useSync, useTrain } from '../api/hooks.js';
+import { ActivityBars, Meters } from '../components/Charts.jsx';
 import { Heatmap, WEEKDAYS } from '../components/Heatmap.jsx';
-import { RepoNav } from '../components/Layout.jsx';
+import { IconSync } from '../components/Icons.jsx';
+import { PageHeader } from '../components/Layout.jsx';
 import { QueryState, RiskBadge, SyncStatus, errorMessage } from '../components/Status.jsx';
 import { date, percent, signed } from '../utils/format.js';
 
@@ -13,39 +15,162 @@ const COMPONENTS = [
   ['contributorDropoff', 'Contributor drop-off (90 days)'],
 ];
 
-function RiskPanel({ risk }) {
+const MONTH = new Intl.DateTimeFormat(undefined, { month: 'short', timeZone: 'UTC' });
+const MONTH_YEAR = new Intl.DateTimeFormat(undefined, {
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
+/** Commits per calendar month across the heatmap window (days are UTC calendar dates). */
+export function monthlyCommits(data) {
+  const counts = new Map();
+  for (const d of data.days)
+    counts.set(d.date.slice(0, 7), (counts.get(d.date.slice(0, 7)) ?? 0) + d.count);
+  const rows = [];
+  const end = data.to.slice(0, 7);
+  for (
+    let m = new Date(`${data.from.slice(0, 7)}-01T00:00:00Z`);
+    ;
+    m.setUTCMonth(m.getUTCMonth() + 1)
+  ) {
+    const key = m.toISOString().slice(0, 7);
+    const value = counts.get(key) ?? 0;
+    rows.push({
+      label: MONTH.format(m),
+      value,
+      title: `${MONTH_YEAR.format(m)}: ${value} commits`,
+    });
+    if (key >= end) break;
+  }
+  return rows;
+}
+
+function Kpi({ label, children }) {
+  return (
+    <div className="card kpi">
+      <dt>{label}</dt>
+      <dd>{children}</dd>
+    </div>
+  );
+}
+
+function RiskKpi({ risk }) {
+  if (!risk) {
+    return (
+      <Kpi label="Abandonment risk">
+        <span className="kpi-note">
+          No risk score yet. It is computed after the first successful sync.
+        </span>
+      </Kpi>
+    );
+  }
+  return (
+    <Kpi label="Abandonment risk">
+      <span>
+        <span className="kpi-value">{risk.score}</span>
+        <span className="kpi-suffix">/100</span>
+      </span>
+      <RiskBadge risk={risk} />
+      <span className="kpi-note">
+        {risk.delta == null
+          ? 'No score from a week ago to compare with yet.'
+          : `${signed(risk.delta)} vs. a week ago`}
+      </span>
+    </Kpi>
+  );
+}
+
+function BusFactorKpi({ query }) {
+  return (
+    <Kpi label="Bus factor">
+      <QueryState
+        query={query}
+        skeleton={48}
+        isEmpty={(d) => d.totalCommits === 0}
+        empty={
+          <span className="kpi-note">
+            No commits in the last 12 months, so there is no bus factor yet.
+          </span>
+        }
+      >
+        {(d) => (
+          <>
+            <span className="kpi-value">{d.busFactor ?? 'n/a'}</span>
+            {d.risky && <span className="badge badge-high">Risky</span>}
+            <span className="kpi-note">of {d.totalCommits} commits, 12 months</span>
+          </>
+        )}
+      </QueryState>
+    </Kpi>
+  );
+}
+
+function Activity({ query }) {
+  const [view, setView] = useState('month');
+  return (
+    <section className="card" aria-labelledby="activity-h">
+      <div className="card-head">
+        <h2 id="activity-h" className="card-title">
+          Commit activity
+        </h2>
+        <div className="segmented" role="group" aria-label="Group commits by">
+          <button type="button" aria-pressed={view === 'month'} onClick={() => setView('month')}>
+            Month
+          </button>
+          <button
+            type="button"
+            aria-pressed={view === 'weekday'}
+            onClick={() => setView('weekday')}
+          >
+            Weekday
+          </button>
+        </div>
+      </div>
+      <QueryState
+        query={query}
+        skeleton={232}
+        isEmpty={(d) => d.total === 0}
+        empty="No commits on the default branch in the last 52 weeks."
+      >
+        {(d) =>
+          view === 'month' ? (
+            <ActivityBars rows={monthlyCommits(d)} caption="Commits per month" />
+          ) : (
+            <ActivityBars
+              caption="Commits per weekday"
+              rows={d.weekdays.map((w) => ({
+                label: WEEKDAYS[w.weekday - 1],
+                value: w.count,
+                title: `${w.count} commits`,
+              }))}
+            />
+          )
+        }
+      </QueryState>
+    </section>
+  );
+}
+
+function RiskBreakdown({ risk }) {
   if (!risk) {
     return (
       <p className="muted">No risk score yet. It is computed after the first successful sync.</p>
     );
   }
   return (
-    <div className="stack">
-      <div className="row" style={{ alignItems: 'baseline' }}>
-        <span className="big-number">{risk.score}</span>
-        <RiskBadge risk={risk} />
-      </div>
+    <div className="stack" style={{ gap: 20 }}>
+      <Meters
+        rows={COMPONENTS.map(([key, name]) => ({
+          name,
+          value: risk.components?.[key],
+          text: percent(risk.components?.[key]),
+        }))}
+      />
       <p className="muted small">
-        {risk.delta == null
-          ? 'No score from a week ago to compare with yet.'
-          : `${signed(risk.delta)} vs. a week ago`}{' '}
-        (computed {date(risk.computedAt)})
+        0% is healthy, 100% is worst. The score is a weighted heuristic from these four signals
+        (computed {date(risk.computedAt)}), not a certainty.
       </p>
-      <table>
-        <caption className="visually-hidden">
-          Risk components, 0 is healthy and 100% is worst
-        </caption>
-        <tbody>
-          {COMPONENTS.map(([key, label]) => (
-            <tr key={key}>
-              <th scope="row" style={{ fontWeight: 400, color: 'var(--text)' }}>
-                {label}
-              </th>
-              <td className="num">{percent(risk.components?.[key])}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 }
@@ -54,8 +179,18 @@ function Model({ name, title, model, metric, train }) {
   const running = train.isPending && train.variables === name;
   const failed = train.isError && train.variables === name ? train.error : null;
   return (
-    <div className="stack" style={{ gap: 6 }}>
-      <h3>{title}</h3>
+    <div className="stack" style={{ gap: 10 }}>
+      <div className="row" style={{ justifyContent: 'space-between' }}>
+        <h3>{title}</h3>
+        <button
+          type="button"
+          className="btn btn-small"
+          disabled={!model.ready || train.isPending}
+          onClick={() => train.mutate(name)}
+        >
+          {running ? 'Training' : model.trained ? 'Retrain' : 'Train'}
+        </button>
+      </div>
       {model.trained ? (
         <p>
           Trained {date(model.trainedAt)} on {model.samples} samples. {metric}
@@ -67,16 +202,18 @@ function Model({ name, title, model, metric, train }) {
       ) : (
         <p className="muted">Not trained yet. Enough data is available ({model.have} samples).</p>
       )}
-      <div>
-        <button
-          type="button"
-          className="btn btn-small"
-          disabled={!model.ready || train.isPending}
-          onClick={() => train.mutate(name)}
-        >
-          {running ? 'Training' : model.trained ? 'Retrain' : 'Train'}
-        </button>
-      </div>
+      {!model.trained && model.need > 0 && (
+        <Meters
+          rows={[
+            {
+              name: 'Training data',
+              value: model.have / model.need,
+              text: `${Math.min(model.have, model.need)}/${model.need}`,
+              good: true,
+            },
+          ]}
+        />
+      )}
       {failed && (
         <p className="error-text small" role="alert">
           {failed.code === 'INSUFFICIENT_TRAINING_DATA' ? failed.message : errorMessage(failed)}
@@ -96,7 +233,7 @@ function ModelPanel({ models, mlStatus, repoId }) {
     );
   }
   return (
-    <div className="stack">
+    <div className="stack" style={{ gap: 20 }}>
       <p className="visually-hidden" aria-live="polite">
         {train.isPending ? 'Training model' : train.isSuccess ? 'Training finished' : ''}
       </p>
@@ -130,86 +267,48 @@ function ModelPanel({ models, mlStatus, repoId }) {
   );
 }
 
-function Weekdays({ data }) {
-  const rows = data.weekdays.map((w) => ({ day: WEEKDAYS[w.weekday - 1], commits: w.count }));
+function Contributors({ query }) {
   return (
-    <>
-      <div style={{ height: 160 }} aria-hidden="true">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            accessibilityLayer={false}
-            data={rows}
-            margin={{ top: 4, right: 4, bottom: 0, left: -24 }}
-          >
-            <XAxis dataKey="day" tickLine={false} axisLine={false} fontSize={12} />
-            <YAxis allowDecimals={false} tickLine={false} axisLine={false} fontSize={12} />
-            <Tooltip cursor={{ fill: 'var(--surface-sunk)' }} />
-            <Bar dataKey="commits" fill="var(--accent)" radius={[3, 3, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-      <table className="visually-hidden">
-        <caption>Commits per weekday</caption>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.day}>
-              <th scope="row">{r.day}</th>
-              <td>{r.commits}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
-  );
-}
-
-function BusFactor({ data }) {
-  return (
-    <div className="stack">
-      <div className="row" style={{ alignItems: 'baseline' }}>
-        <span className="big-number">{data.busFactor ?? 'n/a'}</span>
-        {data.risky && <span className="badge badge-high">Risky</span>}
-      </div>
-      <p className="muted small">
-        Fewest contributors covering half of the {data.totalCommits} default-branch commits in the
-        last 12 months. 1 or 2 means the project depends on very few people.
-      </p>
-      <div style={{ height: 32 * Math.max(data.contributors.length, 1) }} aria-hidden="true">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            accessibilityLayer={false}
-            data={data.contributors}
-            layout="vertical"
-            margin={{ top: 0, right: 8, bottom: 0, left: 8 }}
-          >
-            <XAxis type="number" hide />
-            <YAxis
-              type="category"
-              dataKey="login"
-              width={110}
-              tickLine={false}
-              axisLine={false}
-              fontSize={12}
-            />
-            <Tooltip cursor={{ fill: 'var(--surface-sunk)' }} />
-            <Bar dataKey="commits" fill="var(--accent)" radius={[0, 3, 3, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-      <table className="visually-hidden">
-        <caption>Top contributors by commits</caption>
-        <tbody>
-          {data.contributors.map((c) => (
-            <tr key={c.login}>
-              <th scope="row">{c.login}</th>
-              <td>
-                {c.commits} commits ({percent(c.share)})
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <section className="card" aria-labelledby="contrib-h">
+      <h2 id="contrib-h" className="card-title">
+        Top contributors
+      </h2>
+      <QueryState
+        query={query}
+        skeleton={200}
+        isEmpty={(d) => d.contributors.length === 0}
+        empty="No contributors with default-branch commits in the last 12 months."
+      >
+        {(d) => (
+          <>
+            <ol className="rank-list">
+              {d.contributors.map((c, i) => (
+                <li key={c.login}>
+                  <span className="avatar" aria-hidden="true">
+                    {c.login.slice(0, 1).toUpperCase()}
+                  </span>
+                  <span className="rank-main">
+                    <strong>{c.login}</strong>
+                    <span className="muted small">
+                      {c.commits} commits · {percent(c.share)} of the total
+                    </span>
+                  </span>
+                  <span className="rank-no">
+                    <span className="visually-hidden">Rank </span>
+                    {i + 1}
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <p className="muted small" style={{ marginTop: 12 }}>
+              The bus factor is the fewest contributors covering half of the {d.totalCommits}{' '}
+              default-branch commits in the last 12 months. 1 or 2 means the project depends on very
+              few people.
+            </p>
+          </>
+        )}
+      </QueryState>
+    </section>
   );
 }
 
@@ -224,104 +323,92 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="page-head">
-        <div className="stack" style={{ gap: 4 }}>
-          <h1>{repo?.fullName ?? 'Repository'}</h1>
-          {repo && (
-            <span className="meta" aria-live="polite">
+      <PageHeader
+        title={repo?.fullName ?? 'Repository'}
+        meta={
+          repo && (
+            <span aria-live="polite">
               <SyncStatus
                 status={repo.syncStatus}
                 error={repo.syncError}
                 lastSyncedAt={repo.lastSyncedAt}
               />
             </span>
-          )}
-        </div>
-        <button
-          type="button"
-          className="btn"
-          disabled={!repo || syncing || sync.isPending}
-          onClick={() => sync.mutate(undefined)}
-        >
-          {syncing ? 'Syncing' : 'Sync now'}
-        </button>
-      </div>
+          )
+        }
+        actions={
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={!repo || syncing || sync.isPending}
+            onClick={() => sync.mutate(undefined)}
+          >
+            <IconSync />
+            {syncing ? 'Syncing' : 'Sync now'}
+          </button>
+        }
+      />
       {sync.isError && (
-        <p className="error-text small" role="alert">
+        <p className="error-text small" role="alert" style={{ marginBottom: 16 }}>
           {sync.error.code === 'SYNC_ALREADY_RUNNING'
             ? 'A sync is already running.'
             : errorMessage(sync.error)}
         </p>
       )}
-      <RepoNav />
-      <div className="grid grid-dash">
-        <section className="panel span-4" aria-labelledby="risk-h">
-          <h2 id="risk-h">Abandonment risk</h2>
-          <QueryState query={dashboard} skeleton={180}>
-            {(d) => <RiskPanel risk={d.risk} />}
-          </QueryState>
-        </section>
-        <section className="panel span-8" aria-labelledby="stats-h">
-          <h2 id="stats-h">At a glance</h2>
-          <QueryState query={dashboard} skeleton={60}>
+      <div className="dash">
+        <div className="dash-row dash-top">
+          <QueryState query={dashboard} skeleton={316}>
             {(d) => (
-              <dl className="stats" style={{ margin: 0 }}>
-                <div className="stat">
-                  <dt>Open issues</dt>
-                  <dd>{d.stats.openIssues}</dd>
-                </div>
-                <div className="stat">
-                  <dt>Closed (7 days)</dt>
-                  <dd>{d.stats.closedIssues7d}</dd>
-                </div>
-                <div className="stat">
-                  <dt>Open pull requests</dt>
-                  <dd>{d.stats.openPrs}</dd>
-                </div>
-                <div className="stat">
-                  <dt>Possible duplicates (7 days)</dt>
-                  <dd>{d.stats.duplicatesFlagged7d}</dd>
-                </div>
+              <dl className="kpis">
+                <RiskKpi risk={d.risk} />
+                <Kpi label="Open issues">
+                  <span className="kpi-value">{d.stats.openIssues}</span>
+                </Kpi>
+                <Kpi label="Closed (7 days)">
+                  <span className="kpi-value">{d.stats.closedIssues7d}</span>
+                </Kpi>
+                <Kpi label="Open pull requests">
+                  <span className="kpi-value">{d.stats.openPrs}</span>
+                </Kpi>
+                <Kpi label="Possible duplicates (7 days)">
+                  <span className="kpi-value">{d.stats.duplicatesFlagged7d}</span>
+                </Kpi>
+                <BusFactorKpi query={busFactor} />
               </dl>
             )}
           </QueryState>
-          <h2 style={{ margin: '20px 0 12px' }}>Models</h2>
-          <QueryState query={dashboard} skeleton={120}>
-            {(d) => <ModelPanel models={d.models} mlStatus={d.mlStatus} repoId={repoId} />}
-          </QueryState>
-        </section>
-        <section className="panel span-12" aria-labelledby="heat-h">
-          <h2 id="heat-h">Commit activity</h2>
-          <QueryState
-            query={heatmap}
-            skeleton={110}
-            isEmpty={(d) => d.total === 0}
-            empty="No commits on the default branch in the last 52 weeks."
-          >
-            {(d) => (
-              <div className="grid grid-dash">
-                <div className="span-8">
-                  <Heatmap data={d} />
-                </div>
-                <div className="span-4">
-                  <h3 style={{ marginBottom: 8 }}>By weekday</h3>
-                  <Weekdays data={d} />
-                </div>
-              </div>
-            )}
-          </QueryState>
-        </section>
-        <section className="panel span-12" aria-labelledby="bus-h">
-          <h2 id="bus-h">Bus factor</h2>
-          <QueryState
-            query={busFactor}
-            skeleton={140}
-            isEmpty={(d) => d.totalCommits === 0}
-            empty="No commits in the last 12 months, so there is no bus factor yet."
-          >
-            {(d) => <BusFactor data={d} />}
-          </QueryState>
-        </section>
+          <Activity query={heatmap} />
+        </div>
+        <div className="dash-row">
+          <section className="card" aria-labelledby="risk-h">
+            <h2 id="risk-h" className="card-title">
+              Risk breakdown
+            </h2>
+            <QueryState query={dashboard} skeleton={180}>
+              {(d) => <RiskBreakdown risk={d.risk} />}
+            </QueryState>
+          </section>
+          <section className="card" aria-labelledby="models-h">
+            <h2 id="models-h" className="card-title">
+              Models
+            </h2>
+            <QueryState query={dashboard} skeleton={180}>
+              {(d) => <ModelPanel models={d.models} mlStatus={d.mlStatus} repoId={repoId} />}
+            </QueryState>
+          </section>
+        </div>
+        <div className="dash-row dash-row-start">
+          <Contributors query={busFactor} />
+          {/* The activity card already reports heatmap errors; the calendar shows only data. */}
+          {heatmap.isSuccess && heatmap.data.total > 0 && (
+            <section className="card" aria-labelledby="calendar-h">
+              <h2 id="calendar-h" className="card-title">
+                Commit calendar
+              </h2>
+              <Heatmap data={heatmap.data} />
+            </section>
+          )}
+        </div>
       </div>
     </>
   );

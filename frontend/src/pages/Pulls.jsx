@@ -1,6 +1,7 @@
 import { Link, useParams, useSearchParams } from 'react-router';
 import { useDashboard, usePulls } from '../api/hooks.js';
-import { GitHubLink, RepoNav } from '../components/Layout.jsx';
+import { FilterSelect } from '../components/FilterSelect.jsx';
+import { GitHubLink, PageHeader } from '../components/Layout.jsx';
 import { Pagination } from '../components/Pagination.jsx';
 import { QueryState } from '../components/Status.jsx';
 import { days, relative } from '../utils/format.js';
@@ -23,10 +24,7 @@ export default function Pulls() {
 
   return (
     <>
-      <div className="page-head">
-        <h1>Pull requests</h1>
-      </div>
-      <RepoNav />
+      <PageHeader title="Pull requests" />
       {model && !model.trained && (
         <p className="notice" style={{ marginBottom: 16 }}>
           Merge-time estimates appear once the merge-time model is trained ({model.have} of{' '}
@@ -35,14 +33,16 @@ export default function Pulls() {
         </p>
       )}
       <div className="filters">
-        <div className="field">
-          <label htmlFor="p-state">State</label>
-          <select id="p-state" value={state} onChange={(e) => set('state', e.target.value)}>
-            <option value="open">Open</option>
-            <option value="closed">Closed</option>
-            <option value="all">All</option>
-          </select>
-        </div>
+        <FilterSelect
+          label="State"
+          value={state}
+          onChange={(v) => set('state', v)}
+          options={[
+            ['open', 'Open'],
+            ['closed', 'Closed'],
+            ['all', 'All'],
+          ]}
+        />
       </div>
       <QueryState
         query={pulls}
@@ -52,7 +52,7 @@ export default function Pulls() {
       >
         {(data) => (
           <>
-            <div className="table-wrap">
+            <div className="card table-card">
               <table className="stacked">
                 <caption className="visually-hidden">Pull requests</caption>
                 <thead>
@@ -92,10 +92,12 @@ export default function Pulls() {
                       <td data-label="Opened">{relative(p.createdAt)}</td>
                       <td data-label="Merge time">
                         {p.mergedAt ? (
-                          <span>merged</span>
+                          <span className="badge badge-mint">merged</span>
                         ) : p.predictedMergeDays != null ? (
-                          <span>
-                            about {days(p.predictedMergeDays)}{' '}
+                          <span className="row" style={{ gap: 6 }}>
+                            <span className="badge badge-lavender">
+                              about {days(p.predictedMergeDays)}
+                            </span>
                             <span className="muted small">(predicted)</span>
                           </span>
                         ) : (

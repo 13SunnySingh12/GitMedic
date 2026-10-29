@@ -10,7 +10,7 @@ The full specification is [GitMedic_Complete.md](GitMedic_Complete.md).
 
 | Service | Path | Stack | Port |
 |---|---|---|---|
-| Frontend | [frontend/](frontend/) | React 19 + Vite (JavaScript), TanStack Query, Recharts | 5173 |
+| Frontend | [frontend/](frontend/) | React 19 + Vite (JavaScript), TanStack Query, Motion | 5173 |
 | Backend | [backend/](backend/) | Spring Boot 4.1, Java 21, Flyway, JDBC | 8080 |
 | ML/RAG | [ml-service/](ml-service/) | FastAPI, scikit-learn, sentence-transformers (all-MiniLM-L6-v2) | 8000 (loopback only) |
 | Database | Supabase Postgres + pgvector, or the local Docker fallback | PostgreSQL 17 | 5433 (local) |

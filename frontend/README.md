@@ -25,26 +25,32 @@ npm run build
 
 ## Visual direction (spec §4.1, TBD-12)
 
-GitMedic is a diagnostic tool, so the interface is calm, clinical and data-dense: it should read
-like an instrument panel, not a marketing page.
+Layout and component shapes follow the Figma "Analytics Dashboard (Community)" reference (file
+`8Fi8ZEy7pLEmuX0WWw24rz`, frames Main, Group Filter and Timeframe filter), translated to
+GitMedic's own pages and data. Nothing from the template's sample content is shown.
 
-- **Colour.** Cool neutral greys for surfaces and text, one teal accent (`--accent`) for links,
-  primary actions and chart marks. Green, amber and red are reserved for the Low/Medium/High risk
-  levels and error/warning notices, so status colour always means status. Light and dark themes
-  follow the system setting (`prefers-color-scheme`); both meet WCAG AA contrast (checked with axe).
-- **Type.** The platform's system UI font at a 15px base (set in `rem`), tabular figures for
-  every number so columns line up. No web fonts: nothing is fetched from third parties.
-- **Shape.** 6px radius on controls and panels; status badges are full pills. Panels use 1px
-  borders, no shadows.
+- **Colour.** Three brand tones, defined once in `src/index.css`: mint `--color-mint` (#BEFFDB:
+  primary buttons, Low risk, positive progress), periwinkle `--color-periwinkle` (#EEF0FF: page
+  background, selected menu rows, chart tracks) and lavender `--color-lavender` (#E1E0FF: active
+  navigation, card borders, predicted-label badges, Medium risk). Everything else is neutral: ink
+  #151E23 for text, bars and High risk, and white cards. Dark mode (`prefers-color-scheme`) keeps
+  the same three tones as accents on dark surfaces.
+- **Type.** Inter (self-hosted from `@fontsource-variable/inter`, nothing fetched from third
+  parties) on the reference scale: 24px bold titles, 16px semibold section labels, 14px body,
+  12px captions, tabular figures for numbers.
+- **Shape.** 230px sidebar card; 20px radius on cards and filter pills, 10px on buttons and nav
+  items; 1px lavender borders and the reference's soft tile shadow (0 5px 20px, 5% black).
 - **Status is never colour alone** (UX-01). Risk badges say "High risk · 72"; predictions are
-  labelled "(predicted, 83%)"; sync status is text.
-- **Motion.** Only feedback: a 160ms press scale on buttons and a 200ms fade/scale when a dialog
-  opens. Nothing animates on frequent actions. With `prefers-reduced-motion`, transforms are
-  removed and the skeleton pulse stops.
-- **States.** Every data widget has its own loading skeleton (sized like its content), empty
-  message and error with retry, so a failing heatmap never hides the risk score.
-- **Small screens.** At 640px and below, tables become stacked label/value rows; the heatmap
-  scrolls inside its own focusable region. No page-level horizontal scroll at 360px.
+  labelled "(predicted, 83%)"; sync status is text; error notices start with "!".
+- **Motion** (`motion` for React, under one `MotionConfig reducedMotion="user"`): the active
+  navigation pill slides between items, pages fade up 8px on arrival, filter menus and dialogs
+  scale in, and chart bars and meters grow once on load. With `prefers-reduced-motion`,
+  transforms are dropped and only opacity changes remain.
+- **States.** Every data widget has its own loading skeleton, empty message and error with retry,
+  so a failing heatmap never hides the risk score.
+- **Small screens.** Below 960px the sidebar becomes a top card whose links wrap; below 640px
+  filters stack, summary cards go two per row and tables become stacked label/value rows. No
+  page-level horizontal scroll at 390px.
 
 ## Accessibility notes
 
