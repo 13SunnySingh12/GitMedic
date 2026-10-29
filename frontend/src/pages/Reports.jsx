@@ -1,7 +1,9 @@
 import { Link, useParams, useSearchParams } from 'react-router';
 import Markdown from 'react-markdown';
 import { useGenerateReport, useReport, useReports } from '../api/hooks.js';
-import { RepoNav } from '../components/Layout.jsx';
+
+import { IconDownload, IconPlus } from '../components/Icons.jsx';
+import { PageHeader } from '../components/Layout.jsx';
 import { Pagination } from '../components/Pagination.jsx';
 import { QueryState, RiskBadge, errorMessage } from '../components/Status.jsx';
 import { date, dateTime } from '../utils/format.js';
@@ -23,22 +25,25 @@ export function Reports() {
 
   return (
     <>
-      <div className="page-head">
-        <h1>Weekly reports</h1>
-        <button
-          type="button"
-          className="btn btn-primary"
-          disabled={generate.isPending}
-          onClick={() => generate.mutate()}
-        >
-          {generate.isPending ? 'Generating' : 'Generate now'}
-        </button>
-      </div>
-      <p aria-live="polite" className="small" style={{ minHeight: '1.5em' }}>
+      <PageHeader
+        title="Weekly reports"
+        meta="One report per week, generated on schedule while the GitMedic server is running."
+        actions={
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={generate.isPending}
+            onClick={() => generate.mutate()}
+          >
+            <IconPlus />
+            {generate.isPending ? 'Generating' : 'Generate now'}
+          </button>
+        }
+      />
+      <p aria-live="polite" className="small" style={{ minHeight: '1.5em', marginBottom: 8 }}>
         {generate.isSuccess && 'Report for the current week generated.'}
         {generate.isError && <span className="error-text">{errorMessage(generate.error)}</span>}
       </p>
-      <RepoNav />
       <QueryState
         query={reports}
         skeleton={200}
@@ -47,7 +52,7 @@ export function Reports() {
       >
         {(data) => (
           <>
-            <div className="table-wrap">
+            <div className="card table-card">
               <table className="stacked">
                 <caption className="visually-hidden">Report history</caption>
                 <thead>
@@ -96,25 +101,31 @@ export function ReportDetail() {
   const base = `/api/v1/reports/${reportId}/download`;
   return (
     <>
-      <p className="small" style={{ marginBottom: 8 }}>
-        <Link to={`/repos/${repoId}/reports`}>Back to reports</Link>
-      </p>
-      <RepoNav />
-      <QueryState query={report} skeleton={320}>
-        {(r) => (
-          <article className="panel stack">
-            <div className="row">
-              <a className="btn btn-small" href={`${base}?format=md`} download>
+      <PageHeader
+        crumb={<Link to={`/repos/${repoId}/reports`}>Back to reports</Link>}
+        title="Weekly report"
+        meta={report.data && `Generated ${dateTime(report.data.generatedAt)}`}
+        actions={
+          report.data && (
+            <>
+              <a className="btn btn-ghost" href={`${base}?format=md`} download>
+                <IconDownload />
                 Download .md
               </a>
-              <a className="btn btn-small" href={`${base}?format=html`} download>
+              <a className="btn btn-ghost" href={`${base}?format=html`} download>
+                <IconDownload />
                 Download .html
               </a>
-              <span className="muted small">Generated {dateTime(r.generatedAt)}</span>
-            </div>
+            </>
+          )
+        }
+      />
+      <QueryState query={report} skeleton={320}>
+        {(r) => (
+          <article className="card">
             {/* Rendered from stored metrics on the server; react-markdown escapes any HTML (SEC-10). */}
             <div className="prose">
-              <Markdown>{r.markdown}</Markdown>
+              <Markdown components={{ h1: 'h2', h2: 'h3' }}>{r.markdown}</Markdown>
             </div>
           </article>
         )}

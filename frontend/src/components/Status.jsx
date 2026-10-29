@@ -37,8 +37,14 @@ export function errorMessage(error) {
   if (error.status === 503 && error.code === 'ML_UNAVAILABLE') {
     return 'The ML service is not reachable right now. Try again once it is running.';
   }
+  if (error.status === 404) {
+    return 'Not found. It may have been removed, or your account cannot access it.';
+  }
   return error.message || 'Something went wrong.';
 }
+
+/** Client errors (bad id, not found, validation) do not change on retry; 408/429 may. */
+const retryable = (e) => !(e?.status >= 400 && e.status < 500) || [408, 429].includes(e.status);
 
 /**
  * UX-04: every data widget handles loading, error and empty on its own.
@@ -56,9 +62,11 @@ export function QueryState({ query, empty, isEmpty, skeleton = 120, children }) 
     return (
       <div className="notice notice-error" role="alert">
         <p>{errorMessage(query.error)}</p>
-        <button type="button" className="link-button small" onClick={() => query.refetch()}>
-          Try again
-        </button>
+        {retryable(query.error) && (
+          <button type="button" className="link-button small" onClick={() => query.refetch()}>
+            Try again
+          </button>
+        )}
       </div>
     );
   }
@@ -72,8 +80,9 @@ export function QueryState({ query, empty, isEmpty, skeleton = 120, children }) 
 export function Prediction({ label, confidence }) {
   if (!label) return <span className="muted">Not predicted</span>;
   return (
-    <span title="Predicted by this repository's label model">
-      {label} <span className="muted small">(predicted, {Math.round(confidence * 100)}%)</span>
+    <span className="row" style={{ gap: 6 }} title="Predicted by this repository's label model">
+      <span className="badge badge-lavender">{label}</span>
+      <span className="muted small">(predicted, {Math.round(confidence * 100)}%)</span>
     </span>
   );
 }

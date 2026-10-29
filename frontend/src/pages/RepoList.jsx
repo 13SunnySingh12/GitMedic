@@ -2,6 +2,8 @@ import { useDeferredValue, useState } from 'react';
 import { Link } from 'react-router';
 import { useGithubRepos, useRepos, useSync, useTrack, useUntrack } from '../api/hooks.js';
 import { Dialog } from '../components/Dialog.jsx';
+import { IconPlus, IconSync } from '../components/Icons.jsx';
+import { PageHeader } from '../components/Layout.jsx';
 import { Pagination } from '../components/Pagination.jsx';
 import { QueryState, RiskBadge, SyncStatus, errorMessage } from '../components/Status.jsx';
 
@@ -138,13 +140,21 @@ export default function RepoList() {
 
   return (
     <>
-      <div className="page-head">
-        <h1>Repositories</h1>
-        <button type="button" className="btn btn-primary" onClick={() => setAdding(true)}>
-          Add repository
-        </button>
-      </div>
-      <p aria-live="polite" className="error-text small" style={{ minHeight: '1.5em' }}>
+      <PageHeader
+        title="Repositories"
+        meta="Health, risk and sync status for every repository you track."
+        actions={
+          <button type="button" className="btn btn-primary" onClick={() => setAdding(true)}>
+            <IconPlus />
+            Add repository
+          </button>
+        }
+      />
+      <p
+        aria-live="polite"
+        className={notice ? 'error-text small' : 'small'}
+        style={{ minHeight: '1.5em', marginBottom: 8 }}
+      >
         {notice}
       </p>
       <QueryState
@@ -161,7 +171,7 @@ export default function RepoList() {
         }
       >
         {(list) => (
-          <div className="table-wrap">
+          <div className="card table-card">
             <table className="stacked">
               <caption className="visually-hidden">Tracked repositories</caption>
               <thead>
@@ -201,6 +211,7 @@ export default function RepoList() {
                           }
                           onClick={() => syncNow(r)}
                         >
+                          <IconSync size={16} />
                           {busy(r.syncStatus)
                             ? 'Syncing'
                             : r.syncStatus === 'FAILED'

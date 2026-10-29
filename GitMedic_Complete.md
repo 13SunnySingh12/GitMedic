@@ -307,7 +307,7 @@ flowchart LR
 |---|---|---|
 | Routing | React Router | MIT |
 | Server state | TanStack Query | MIT; caching, retries off for 4xx |
-| Charts | Recharts | MIT; bar charts |
+| Charts | Plain HTML/CSS bars with hidden data tables (Recharts until 1.1.3) | No chart dependency |
 | Heatmap | Custom CSS grid component | Avoids extra dependency |
 | Markdown render (report, suggested answer) | `react-markdown` (no raw HTML) | MIT; safe by default |
 | Styling | Implementer's choice (plain CSS/CSS Modules or a free utility framework) | No style mandated |
@@ -1249,6 +1249,7 @@ A-1 Personas (§1.2) · A-2 Supabase Free lacks guaranteed backups · A-3 Supaba
 | 1.0.0 | 2026-10 | Initial specification |
 | 1.1.0 | 2026-10-25 | Added ML-11 (model status + training readiness). Spring data access uses `JdbcClient` instead of JPA: natural-key upserts (`ON CONFLICT`), `text[]`, `jsonb` and `vector` columns are plain SQL. Report "Generate now" accepts `{"period":"current"|"previous"}` (default current) and regenerating a period replaces it. Risk history rows are keyed by the as-of time. Dev-only `seed` profile. `GITMEDIC_ENV_FILE` selects the backend env file (default `.env`). TBD resolutions above |
 | 1.1.1 | 2026-10-26 | Audit fixes: GitHub `Link` pagination only followed on the configured API origin (the user token could otherwise go to another host); API request bodies capped at 64 KB (413 `PAYLOAD_TOO_LARGE`); public health shows statuses only, with ML as a non-fatal component; incremental commit sync overlaps the previous sync by 7 days; the add-repository picker caches the GitHub repo list per user for 60 s; suggested-answer Markdown renders no images; GitHub links accept http(s) only; setuptools 84.2.1 pinned (runtime dependency of torch with known advisories); database dumps gitignored. NFR-003 measured (Appendix A) |
+| 1.1.3 | 2026-10-29 | Frontend redesigned to the Figma "Analytics Dashboard" reference with a three-tone palette (#BEFFDB, #EEF0FF, #E1E0FF): sidebar shell, filter pills with menus, dashboard cards, activity bars and meters in plain HTML/CSS (Recharts removed), Motion for React (`motion`) for transitions with reduced-motion support, self-hosted Inter. Frontend audit fixes in the same release: the post-login return to the requested page works under StrictMode, unknown or inaccessible repositories and non-numeric ids show one not-found page (no per-widget errors, no API call for bad ids), client errors are not offered a pointless retry, a page that fails to render keeps the shell, network failures and non-JSON success responses get plain messages, unknown filter values in the URL fall back to the defaults, contributors show share bars (§3.3 bar chart). Strict palette: every surface, border, chart mark, state, gradient and shadow uses only #BEFFDB, #EEF0FF and #E1E0FF, with one ink (#151E23) for text, icons and focus only (palette pairs reach at most 1.14:1); the dark theme, whites, greys, transparency and colour transitions are removed. No API or data change |
 
 ---
 

@@ -10,6 +10,8 @@ export class ApiError extends Error {
   }
 }
 
+const UNREACHABLE = 'Cannot reach the GitMedic server. Check that it is running, then try again.';
+
 let onUnauthenticated = () => {};
 
 /** Registered by the app shell: any 401 clears client state and routes to /login. */
@@ -25,17 +27,29 @@ export async function api(path, { method = 'GET', body } = {}) {
   if (body !== undefined) {
     headers['Content-Type'] = 'application/json';
   }
-  const res = await fetch(path, {
-    method,
-    headers,
-    credentials: 'same-origin',
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
+  let res;
+  try {
+    res = await fetch(path, {
+      method,
+      headers,
+      credentials: 'same-origin',
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+  } catch {
+    // No status: TanStack Query retries it as a transient failure.
+    throw new ApiError(undefined, { detail: UNREACHABLE });
+  }
   if (res.status === 204) {
     return null;
   }
   const isJson = (res.headers.get('content-type') || '').includes('json');
-  const data = isJson ? await res.json() : null;
+  const data = isJson ? await res.json().catch(() => null) : null;
+  if (res.ok && data === null) {
+    // A proxy or error page answered instead of the API: never hand `null` to a page as data.
+    throw new ApiError(res.status, {
+      detail: 'The server sent an unexpected response. Try again.',
+    });
+  }
   if (!res.ok) {
     const error = new ApiError(res.status, data);
     if (res.status === 401) {

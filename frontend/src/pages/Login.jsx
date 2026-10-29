@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router';
 import { safeNext } from '../api/client.js';
-import { NEXT_KEY } from '../components/Layout.jsx';
+import { Brand, NEXT_KEY } from '../components/Layout.jsx';
 
 const ERRORS = {
   oauth_failed: 'Sign-in was cancelled or could not be verified. Please try again.',
@@ -18,8 +18,10 @@ export default function Login() {
 
   return (
     <main className="login">
-      <div className="login-card">
-        <h1>GitMedic</h1>
+      <div className="card login-card">
+        <h1 className="brand">
+          <Brand />
+        </h1>
         <p className="muted">
           Health checks for your GitHub repositories: possible duplicate issues, predicted labels
           and merge times, abandonment risk, and a weekly report.

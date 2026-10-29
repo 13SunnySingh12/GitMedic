@@ -1,3 +1,4 @@
+import { StrictMode } from 'react';
 import { render } from '@testing-library/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter, useLocation } from 'react-router';
@@ -29,13 +30,17 @@ export function renderApp(route, { signedIn = true } = {}) {
   }
   const client = createQueryClient();
   client.setDefaultOptions({ queries: { retry: false, staleTime: 0 } });
+  // StrictMode as in main.jsx: it double-invokes renders and effects, which exposes side
+  // effects done during render.
   return render(
-    <QueryClientProvider client={client}>
-      <MemoryRouter initialEntries={[route]}>
-        <App />
-        <LocationProbe />
-      </MemoryRouter>
-    </QueryClientProvider>,
+    <StrictMode>
+      <QueryClientProvider client={client}>
+        <MemoryRouter initialEntries={[route]}>
+          <App />
+          <LocationProbe />
+        </MemoryRouter>
+      </QueryClientProvider>
+    </StrictMode>,
   );
 }
 
