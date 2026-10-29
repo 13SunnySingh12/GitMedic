@@ -1,7 +1,7 @@
 import { Suspense, lazy } from 'react';
-import { Link, Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router';
 import { MotionConfig } from 'motion/react';
-import { AppShell, PageHeader } from './components/Layout.jsx';
+import { AppShell, NotFoundPage } from './components/Layout.jsx';
 import IssueDetail from './pages/IssueDetail.jsx';
 import Issues from './pages/Issues.jsx';
 import Login from './pages/Login.jsx';
@@ -11,20 +11,6 @@ import { ReportDetail, Reports } from './pages/Reports.jsx';
 
 // The dashboard is the heaviest page; load it only when a dashboard is opened.
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'));
-
-function NotFound() {
-  return (
-    <>
-      <PageHeader title="Page not found" />
-      <div className="card empty">
-        <p>There is nothing at this address.</p>
-        <p style={{ marginTop: 12 }}>
-          <Link to="/repos">Go to your repositories</Link>
-        </p>
-      </div>
-    </>
-  );
-}
 
 export default function App() {
   return (
@@ -48,7 +34,7 @@ export default function App() {
           <Route path="/repos/:repoId/pulls" element={<Pulls />} />
           <Route path="/repos/:repoId/reports" element={<Reports />} />
           <Route path="/repos/:repoId/reports/:reportId" element={<ReportDetail />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </MotionConfig>

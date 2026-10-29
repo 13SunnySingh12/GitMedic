@@ -1,8 +1,9 @@
-import { NavLink, Navigate, Outlet, useLocation, useMatch, useNavigate } from 'react-router';
+import { Component, useEffect } from 'react';
+import { Link, NavLink, Navigate, Outlet, useLocation, useMatch, useNavigate } from 'react-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'motion/react';
 import { useLogout, useMe } from '../api/hooks.js';
-import { safeNext } from '../api/client.js';
+import { api, safeNext } from '../api/client.js';
 import { IconIssues, IconPull, IconReport, IconRepos, IconSignOut, IconTrend } from './Icons.jsx';
 
 export const NEXT_KEY = 'gitmedic.next';
@@ -37,15 +38,19 @@ function NavItem({ to, end, icon, children }) {
   );
 }
 
-/** The repo's name from the already-loaded repository list; no extra request. */
+/** The repo's name from the already-loaded repository list; never fetches on its own. */
 function useRepoName(repoId) {
-  const repos = useQuery({ queryKey: ['repos'], enabled: false });
+  const repos = useQuery({
+    queryKey: ['repos'],
+    queryFn: () => api('/api/v1/repos'),
+    enabled: false,
+  });
   return repos.data?.find?.((r) => String(r.id) === repoId)?.fullName;
 }
 
 function Sidebar({ me, onSignOut, signingOut }) {
   const repoMatch = useMatch('/repos/:repoId/*');
-  const repoId = repoMatch?.params.repoId;
+  const repoId = isId(repoMatch?.params.repoId) ? repoMatch.params.repoId : undefined;
   const repoName = useRepoName(repoId);
   const base = `/repos/${repoId}`;
   return (
@@ -113,6 +118,55 @@ function Sidebar({ me, onSignOut, signingOut }) {
   );
 }
 
+const isId = (s) => /^\d+$/.test(s ?? '');
+
+/** True when a repo, issue or report id in the path is not a number (no request is made). */
+function hasBadId(pathname) {
+  const m = pathname.match(/^\/repos\/([^/]+)(?:\/(?:issues|reports)\/([^/]+))?/);
+  return !!m && m.slice(1).some((s) => s !== undefined && !isId(s));
+}
+
+/** The not-found page, also used for ids that do not exist or are not the user's. */
+export function NotFoundPage({
+  title = 'Page not found',
+  text = 'There is nothing at this address.',
+}) {
+  return (
+    <>
+      <PageHeader title={title} />
+      <div className="card empty">
+        <p>{text}</p>
+        <p style={{ marginTop: 12 }}>
+          <Link to="/repos">Go to your repositories</Link>
+        </p>
+      </div>
+    </>
+  );
+}
+
+/** A rendering error shows a message for this page only; the sidebar stays usable. */
+class PageErrorBoundary extends Component {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch(error) {
+    console.error('Page failed to render', error); // details stay in the console, not the UI
+  }
+
+  render() {
+    if (!this.state.failed) return this.props.children;
+    return (
+      <div className="notice notice-error" role="alert">
+        This page could not be shown. <a href={window.location.href}>Reload the page</a> or go back
+        to <Link to="/repos">your repositories</Link>.
+      </div>
+    );
+  }
+}
+
 /** Signed-in shell: sidebar plus content; renders nothing protected until /me succeeds. */
 export function AppShell() {
   const me = useMe();
@@ -120,6 +174,17 @@ export function AppShell() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const logout = useLogout();
+  const signedIn = me.isSuccess;
+  const here = location.pathname + location.search;
+
+  // After OAuth the backend lands on /repos; continue to the page the user first asked for.
+  // This runs in an effect, not during render: StrictMode renders twice and would lose it.
+  useEffect(() => {
+    if (!signedIn) return;
+    const next = safeNext(sessionStorage.getItem(NEXT_KEY));
+    sessionStorage.removeItem(NEXT_KEY);
+    if (next && next !== here) navigate(next, { replace: true });
+  }, [signedIn, here, navigate]);
 
   if (me.isPending) {
     return (
@@ -146,15 +211,6 @@ export function AppShell() {
     );
   }
 
-  // After OAuth the backend lands on /repos; continue to the page the user originally asked for.
-  const next = safeNext(sessionStorage.getItem(NEXT_KEY));
-  if (next) {
-    sessionStorage.removeItem(NEXT_KEY);
-    if (next !== location.pathname + location.search) {
-      return <Navigate to={next} replace />;
-    }
-  }
-
   async function signOut() {
     try {
       await logout.mutateAsync();
@@ -178,7 +234,9 @@ export function AppShell() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <Outlet />
+            <PageErrorBoundary key={location.pathname}>
+              {hasBadId(location.pathname) ? <NotFoundPage /> : <Outlet />}
+            </PageErrorBoundary>
           </motion.div>
         </main>
       </div>

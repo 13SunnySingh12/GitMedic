@@ -6,6 +6,8 @@ import { RiskBadge } from '../components/Status.jsx';
 import { calendarDays } from '../components/Heatmap.jsx';
 import { safeNext } from '../api/client.js';
 import { nextReportDate } from '../pages/Reports.jsx';
+import { monthlyCommits } from '../pages/Dashboard.jsx';
+import { NEXT_KEY } from '../components/Layout.jsx';
 import { server } from './server.js';
 import { currentLocation, expectNoAxeViolations, page, problem, renderApp } from './utils.jsx';
 
@@ -446,4 +448,104 @@ test('unknown routes show a way back', async () => {
     'href',
     '/repos',
   );
+});
+
+describe('robustness (frontend audit regressions)', () => {
+  test('after sign-in the app continues to the page the user first asked for', async () => {
+    sessionStorage.setItem(NEXT_KEY, '/repos/7/issues?state=closed');
+    server.use(http.get('/api/v1/repos/7/issues', () => HttpResponse.json(page([]))));
+    server.use(http.get('/api/v1/repos/7/dashboard', () => problem(503, 'ML_UNAVAILABLE')));
+    renderApp('/repos');
+    await waitFor(() =>
+      expect(currentLocation().pathname + currentLocation().search).toBe(
+        '/repos/7/issues?state=closed',
+      ),
+    );
+    expect(sessionStorage.getItem(NEXT_KEY)).toBeNull();
+  });
+
+  test('a non-numeric id shows not found without calling the API', async () => {
+    renderApp('/repos/abc/issues/xyz'); // any request would fail on MSW's unhandled-request rule
+    expect(await screen.findByRole('heading', { name: 'Page not found' })).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  test("a repository that is not the user's shows one not-found page, not an error per widget", async () => {
+    const missing = () => problem(404, 'NOT_FOUND', 'Resource not found.');
+    server.use(
+      http.get('/api/v1/repos/9/dashboard', missing),
+      http.get('/api/v1/repos/9/heatmap', missing),
+      http.get('/api/v1/repos/9/bus-factor', missing),
+    );
+    renderApp('/repos/9');
+    expect(
+      await screen.findByRole('heading', { name: 'Repository not found' }, { timeout: 15000 }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+  });
+
+  test('unknown filter values in the URL fall back to what the pills show', async () => {
+    const seen = [];
+    server.use(
+      http.get('/api/v1/repos/7/issues', ({ request }) => {
+        seen.push(new URL(request.url).searchParams);
+        return HttpResponse.json(page([]));
+      }),
+      http.get('/api/v1/repos/7/dashboard', () => problem(503, 'ML_UNAVAILABLE')),
+    );
+    renderApp('/repos/7/issues?state=bogus&label=nope');
+    expect(await screen.findByRole('combobox', { name: 'State: Open' })).toBeInTheDocument();
+    await waitFor(() => expect(seen.length).toBeGreaterThan(0));
+    expect(seen.at(-1).get('state')).toBe('open');
+    expect(seen.at(-1).has('label')).toBe(false);
+  });
+
+  test("an unreachable server gets a plain message, not the browser's", async () => {
+    server.use(http.get('/api/v1/repos', () => HttpResponse.error()));
+    renderApp('/repos');
+    expect(await screen.findByRole('alert')).toHaveTextContent(/Cannot reach the GitMedic server/);
+  });
+
+  test('a success response that is not JSON is an error, not empty data', async () => {
+    server.use(http.get('/api/v1/repos', () => HttpResponse.text('<html>proxy</html>')));
+    renderApp('/repos');
+    expect(await screen.findByRole('alert')).toHaveTextContent(/unexpected response/);
+  });
+
+  test('a page that fails to render keeps the shell and offers a way back', async () => {
+    // A dashboard body without `stats` makes the page throw while rendering.
+    server.use(
+      http.get('/api/v1/repos/7/dashboard', () =>
+        HttpResponse.json({ repo: REPO, risk: null, models: null, mlStatus: 'OK' }),
+      ),
+      http.get('/api/v1/repos/7/heatmap', () => problem(500, 'INTERNAL_ERROR')),
+      http.get('/api/v1/repos/7/bus-factor', () => problem(500, 'INTERNAL_ERROR')),
+    );
+    const quiet = console.error;
+    console.error = () => {}; // React logs the caught render error
+    try {
+      renderApp('/repos/7');
+      expect(
+        await screen.findByText(/This page could not be shown/, {}, { timeout: 15000 }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
+    } finally {
+      console.error = quiet;
+    }
+  });
+
+  test('monthly bars have unique keys and full month names when a month repeats', () => {
+    const rows = monthlyCommits({
+      from: '2025-10-31',
+      to: '2026-10-29',
+      days: [
+        { date: '2025-10-31', count: 2 },
+        { date: '2026-10-01', count: 3 },
+      ],
+    });
+    expect(rows).toHaveLength(13);
+    expect(new Set(rows.map((r) => r.key)).size).toBe(13);
+    expect([rows[0].value, rows.at(-1).value]).toEqual([2, 3]);
+    expect(rows[0].name).not.toBe(rows.at(-1).name); // both are October, different years
+  });
 });

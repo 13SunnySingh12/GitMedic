@@ -4,7 +4,7 @@ import { useBusFactor, useDashboard, useHeatmap, useSync, useTrain } from '../ap
 import { ActivityBars, Meters } from '../components/Charts.jsx';
 import { Heatmap, WEEKDAYS } from '../components/Heatmap.jsx';
 import { IconSync } from '../components/Icons.jsx';
-import { PageHeader } from '../components/Layout.jsx';
+import { NotFoundPage, PageHeader } from '../components/Layout.jsx';
 import { QueryState, RiskBadge, SyncStatus, errorMessage } from '../components/Status.jsx';
 import { date, percent, signed } from '../utils/format.js';
 
@@ -37,7 +37,9 @@ export function monthlyCommits(data) {
     const key = m.toISOString().slice(0, 7);
     const value = counts.get(key) ?? 0;
     rows.push({
+      key,
       label: MONTH.format(m),
+      name: MONTH_YEAR.format(m),
       value,
       title: `${MONTH_YEAR.format(m)}: ${value} commits`,
     });
@@ -289,6 +291,12 @@ function Contributors({ query }) {
                   </span>
                   <span className="rank-main">
                     <strong>{c.login}</strong>
+                    <span className="meter-track" aria-hidden="true">
+                      <span
+                        className="meter-fill"
+                        style={{ display: 'block', width: `${Math.min(1, c.share) * 100}%` }}
+                      />
+                    </span>
                     <span className="muted small">
                       {c.commits} commits · {percent(c.share)} of the total
                     </span>
@@ -320,6 +328,16 @@ export default function Dashboard() {
   const sync = useSync(repoId);
   const repo = dashboard.data?.repo;
   const syncing = repo && (repo.syncStatus === 'PENDING' || repo.syncStatus === 'RUNNING');
+
+  // One clear answer instead of an error per widget when the repo is not (or no longer) the user's.
+  if (dashboard.error?.status === 404) {
+    return (
+      <NotFoundPage
+        title="Repository not found"
+        text="This repository is not tracked by your account, or it was removed."
+      />
+    );
+  }
 
   return (
     <>

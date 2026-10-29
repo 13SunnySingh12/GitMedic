@@ -9,7 +9,9 @@ import { days, relative } from '../utils/format.js';
 export default function Pulls() {
   const { repoId } = useParams();
   const [params, setParams] = useSearchParams();
-  const state = params.get('state') ?? 'open';
+  const state = ['open', 'closed', 'all'].includes(params.get('state'))
+    ? params.get('state')
+    : 'open';
   const page = Math.max(0, Number(params.get('page') ?? 0) || 0);
   const pulls = usePulls(repoId, { state, page, size: 25 });
   const dashboard = useDashboard(repoId);

@@ -6,12 +6,16 @@ import { Pagination } from '../components/Pagination.jsx';
 import { Prediction, QueryState } from '../components/Status.jsx';
 import { date } from '../utils/format.js';
 
+const STATES = ['open', 'closed', 'all'];
+const LABELS = ['bug', 'feature', 'question'];
+
 /** Filters live in the URL (FR-025 / UX-07) so views are shareable and survive reloads. */
 export default function Issues() {
   const { repoId } = useParams();
   const [params, setParams] = useSearchParams();
-  const state = params.get('state') ?? 'open';
-  const label = params.get('label') ?? '';
+  // Unknown values in a pasted or edited URL fall back to the defaults the pills show.
+  const state = STATES.includes(params.get('state')) ? params.get('state') : 'open';
+  const label = LABELS.includes(params.get('label')) ? params.get('label') : '';
   const duplicate = params.get('duplicate') === 'true';
   const page = Math.max(0, Number(params.get('page') ?? 0) || 0);
   const issues = useIssues(repoId, {

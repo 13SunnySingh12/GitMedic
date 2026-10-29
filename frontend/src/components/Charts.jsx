@@ -10,8 +10,9 @@ export function niceMax(max) {
 
 /**
  * Figma "Activity" chart: rounded bars on full-height tracks with a 0-to-max axis.
- * `rows` is [{ label, value, title }]. The visible chart is hidden from assistive technology;
- * the table below it carries the same numbers.
+ * `rows` is [{ key?, label, name?, value, title }]; `name` (e.g. "October 2025") labels the
+ * accessible table when a short axis label repeats. The visible chart is hidden from assistive
+ * technology; the table below it carries the same numbers.
  */
 export function ActivityBars({ rows, caption }) {
   const top = niceMax(Math.max(0, ...rows.map((r) => r.value)));
@@ -26,7 +27,7 @@ export function ActivityBars({ rows, caption }) {
         </div>
         <div className="bars-plot">
           {rows.map((r, i) => (
-            <div className="bar-col" key={r.label}>
+            <div className="bar-col" key={r.key ?? r.label}>
               <div className="bar-track">
                 <span className="bar-tip">{r.title}</span>
                 <motion.span
@@ -46,8 +47,8 @@ export function ActivityBars({ rows, caption }) {
         <caption>{caption}</caption>
         <tbody>
           {rows.map((r) => (
-            <tr key={r.label}>
-              <th scope="row">{r.label}</th>
+            <tr key={r.key ?? r.label}>
+              <th scope="row">{r.name ?? r.label}</th>
               <td>{r.value}</td>
             </tr>
           ))}
