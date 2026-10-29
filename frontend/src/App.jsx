@@ -14,7 +14,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard.jsx'));
 
 export default function App() {
   return (
-    // Users who ask for reduced motion get no transform or layout animation (opacity only).
+    // Users who ask for reduced motion get no transform or layout animation.
     <MotionConfig reducedMotion="user" transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}>
       <Routes>
         <Route path="/login" element={<Login />} />

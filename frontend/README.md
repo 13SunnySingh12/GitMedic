@@ -29,12 +29,16 @@ Layout and component shapes follow the Figma "Analytics Dashboard (Community)" r
 `8Fi8ZEy7pLEmuX0WWw24rz`, frames Main, Group Filter and Timeframe filter), translated to
 GitMedic's own pages and data. Nothing from the template's sample content is shown.
 
-- **Colour.** Three brand tones, defined once in `src/index.css`: mint `--color-mint` (#BEFFDB:
-  primary buttons, Low risk, positive progress), periwinkle `--color-periwinkle` (#EEF0FF: page
-  background, selected menu rows, chart tracks) and lavender `--color-lavender` (#E1E0FF: active
-  navigation, card borders, predicted-label badges, Medium risk). Everything else is neutral: ink
-  #151E23 for text, bars and High risk, and white cards. Dark mode (`prefers-color-scheme`) keeps
-  the same three tones as accents on dark surfaces.
+- **Colour (strict).** Only three colours paint the UI, defined once in `src/index.css`:
+  `--color-lavender-white` #EEF0FF (page canvas, and anything inset in a card), `--color-lavender`
+  #E1E0FF (sidebar, cards, pills, dialogs, dividers on the canvas) and `--color-mint` #BEFFDB
+  (primary action, active navigation, selected and hover states, chart marks, warnings). One ink,
+  #151E23, is used for text, icons and the focus ring only: no pair of palette colours exceeds
+  1.14:1 contrast, so text in palette colours would be unreadable. There is no white, grey,
+  transparency tint or colour transition (a fade passes through blends off the palette).
+  Hierarchy comes from weight, size and surface; risk levels add a shape marker (● ◆ ▲) to the
+  level text; heatmap intensity is the size of the mint square in each cell. Mint marks sit
+  directly on lavender cards, the most distinct pair the palette offers. There is one light theme.
 - **Type.** Inter (self-hosted from `@fontsource-variable/inter`, nothing fetched from third
   parties) on the reference scale: 24px bold titles, 16px semibold section labels, 14px body,
   12px captions, tabular figures for numbers.
@@ -43,9 +47,9 @@ GitMedic's own pages and data. Nothing from the template's sample content is sho
 - **Status is never colour alone** (UX-01). Risk badges say "High risk · 72"; predictions are
   labelled "(predicted, 83%)"; sync status is text; error notices start with "!".
 - **Motion** (`motion` for React, under one `MotionConfig reducedMotion="user"`): the active
-  navigation pill slides between items, pages fade up 8px on arrival, filter menus and dialogs
-  scale in, and chart bars and meters grow once on load. With `prefers-reduced-motion`,
-  transforms are dropped and only opacity changes remain.
+  navigation pill slides between items, pages rise 8px on arrival, filter menus and dialogs scale
+  in, and chart bars and meters grow once on load. Only movement animates, never colour or
+  opacity. With `prefers-reduced-motion`, these transforms are dropped.
 - **States.** Every data widget has its own loading skeleton, empty message and error with retry,
   so a failing heatmap never hides the risk score.
 - **Small screens.** Below 960px the sidebar becomes a top card whose links wrap; below 640px

@@ -1,78 +1,40 @@
 /* GitMedic design tokens. Layout, type scale and component shapes follow the Figma
-   "Analytics Dashboard" reference; colour is limited to three palette tones plus neutrals.
+   "Analytics Dashboard" reference.
+   Colour rule (strict): every surface, border, chart mark, state, gradient and shadow uses only
+   the three palette colours below. One ink colour is allowed for text, icons and the focus ring
+   only, because no pair of palette colours reaches readable contrast (at best 1.14:1).
+   Hierarchy comes from weight, size and surface, never from extra tints or transparency.
    Radius rule: 20px cards and pills, 10px controls and nav items. */
 :root {
   color-scheme: light;
 
-  /* The three brand tones (mandatory palette). Everything colourful derives from these. */
+  /* The palette. Nothing else may colour the UI. */
   --color-mint: #beffdb;
-  --color-periwinkle: #eef0ff;
+  --color-lavender-white: #eef0ff;
   --color-lavender: #e1e0ff;
 
-  /* Neutrals for text, marks and separation. */
+  /* Text, icons and the focus ring only. */
   --ink: #151e23;
-  --text: var(--ink);
-  --muted: #555b6e;
-  --white: #ffffff;
 
   /* Roles */
-  --bg: var(--color-periwinkle);
-  --surface: var(--white);
-  --surface-2: var(--color-periwinkle);
-  --stroke: var(--color-lavender);
-  --control-border: rgb(21 30 35 / 0.16);
-  --nav-active-bg: var(--color-lavender);
-  --nav-active-text: var(--ink);
-  --primary-bg: var(--color-mint);
-  --primary-text: var(--ink);
-  --focus: var(--ink);
-  --bar: var(--ink);
-  --track: var(--color-periwinkle);
-  --heat-0: var(--color-lavender);
-  --heat-1: rgb(21 30 35 / 0.22);
-  --heat-2: rgb(21 30 35 / 0.42);
-  --heat-3: rgb(21 30 35 / 0.64);
-  --heat-4: rgb(21 30 35 / 0.86);
-  --backdrop: rgb(21 30 35 / 0.36);
+  --canvas: var(--color-lavender-white); /* page background, and anything inset in a surface */
+  --surface: var(--color-lavender); /* sidebar, cards, pills, dialogs */
+  --accent: var(--color-mint); /* primary action, active and selected states, data marks */
+  --line-on-canvas: var(--color-lavender);
+  --line-on-surface: var(--color-lavender-white);
+  --text: var(--ink);
 
-  /* Shape, depth, type (Figma: Tile Dropshadow, Inter scale 24/16/14/12) */
+  /* Shape, depth, type (Inter scale 24/16/14/12) */
   --radius-card: 20px;
   --radius-control: 10px;
   --radius-pill: 999px;
-  --shadow-tile: 0 5px 20px rgb(0 0 0 / 0.05);
-  --shadow-menu: 0 12px 32px rgb(21 30 35 / 0.14);
+  --shadow-tile: 0 14px 28px -16px var(--color-lavender);
+  --shadow-menu: 0 18px 40px -12px var(--color-lavender);
   --gap: 24px;
   --font:
     'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     sans-serif;
-  --mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Menlo, Consolas, monospace;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --text: var(--color-periwinkle);
-    --muted: #b3b7d4;
-    --bg: #0e1120;
-    --surface: #161a2c;
-    --surface-2: #1e2339;
-    --stroke: #2a3050;
-    --control-border: #3a4166;
-    --nav-active-bg: rgb(225 224 255 / 0.14);
-    --nav-active-text: var(--color-lavender);
-    --focus: var(--color-mint);
-    --bar: var(--color-lavender);
-    --track: rgb(238 240 255 / 0.08);
-    --heat-0: rgb(225 224 255 / 0.1);
-    --heat-1: rgb(225 224 255 / 0.3);
-    --heat-2: rgb(225 224 255 / 0.5);
-    --heat-3: rgb(225 224 255 / 0.74);
-    --heat-4: var(--color-lavender);
-    --backdrop: rgb(5 7 15 / 0.6);
-    --shadow-tile: 0 5px 20px rgb(0 0 0 / 0.3);
-    --shadow-menu: 0 12px 32px rgb(0 0 0 / 0.45);
-  }
 }
 
 *,
@@ -86,8 +48,14 @@ body {
   margin: 0;
 }
 
+html {
+  color: var(--text); /* the root too: browsers default it to black */
+  background: var(--canvas);
+  scrollbar-color: var(--color-lavender) var(--color-lavender-white);
+}
+
 body {
-  background: var(--bg);
+  background: var(--canvas);
   color: var(--text);
   font: 500 0.875rem/1.45 var(--font); /* rem: honours the reader's browser font size */
   font-variant-numeric: tabular-nums;
@@ -96,27 +64,28 @@ body {
 
 a {
   color: var(--text);
-  text-decoration: underline;
-  text-decoration-color: var(--control-border);
-  text-underline-offset: 0.2em;
+  text-decoration: underline 1px;
+  text-underline-offset: 0.22em;
 }
 
 a:hover {
-  text-decoration-color: currentColor;
+  text-decoration-thickness: 2px;
 }
 
 ::selection {
-  background: var(--color-lavender);
+  background: var(--accent);
   color: var(--ink);
 }
 
-html {
-  scrollbar-color: var(--stroke) transparent;
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
-:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
+::placeholder {
+  color: var(--ink);
+  font-weight: 400;
+  font-style: italic;
 }
 
 h1,
@@ -140,7 +109,7 @@ h2 {
 
 h3 {
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 650;
 }
 
 p {
@@ -156,12 +125,21 @@ p {
   white-space: nowrap;
 }
 
-/* --- Shell: sidebar + content (Figma: 230px side nav, 20px radius, 32px gutter) ------- */
+/* Secondary text: lighter weight, never a lighter colour. */
+.muted {
+  font-weight: 400;
+}
+
+.small {
+  font-size: 0.8125rem;
+}
+
+/* --- Shell: sidebar + content (230px side nav, 20px radius, 32px gutter) -------------- */
 .skip-link {
   position: absolute;
   left: 12px;
   top: -48px;
-  background: var(--surface);
+  background: var(--accent);
   padding: 8px 12px;
   border-radius: var(--radius-control);
   z-index: 10;
@@ -190,7 +168,6 @@ p {
   gap: 28px;
   padding: 28px 16px 20px;
   background: var(--surface);
-  border: 1px solid var(--stroke);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-tile);
   overflow-y: auto;
@@ -203,7 +180,7 @@ p {
   padding: 0 12px;
   color: var(--text);
   font-size: 1.125rem;
-  font-weight: 700;
+  font-weight: 750;
   letter-spacing: -0.02em;
   text-decoration: none;
 }
@@ -211,10 +188,10 @@ p {
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: var(--color-mint);
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--color-mint), var(--color-lavender-white));
   color: var(--ink);
 }
 
@@ -230,18 +207,19 @@ p {
 
 .nav-label {
   padding: 0 14px 6px;
-  color: var(--muted);
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .nav-label span {
   display: block;
-  margin-top: 2px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  margin-top: 4px;
+  font-size: 0.8125rem;
+  font-weight: 400;
   letter-spacing: 0;
+  text-transform: none;
   overflow-wrap: anywhere;
 }
 
@@ -261,7 +239,8 @@ p {
   min-height: 44px;
   padding: 0 14px;
   border-radius: var(--radius-control);
-  color: var(--muted);
+  color: var(--text);
+  font-weight: 450;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -271,19 +250,22 @@ p {
 }
 
 .nav-link:hover {
-  color: var(--text);
+  background: var(--canvas);
 }
 
 .nav-link[aria-current='page'] {
-  color: var(--nav-active-text);
-  font-weight: 600;
+  font-weight: 650;
+}
+
+.nav-link[aria-current='page']:hover {
+  background: transparent;
 }
 
 .nav-pill {
   position: absolute;
   inset: 0;
   border-radius: var(--radius-control);
-  background: var(--nav-active-bg);
+  background: var(--accent);
 }
 
 .sidebar-foot {
@@ -291,7 +273,7 @@ p {
   display: grid;
   gap: 12px;
   padding: 18px 12px 0;
-  border-top: 1px solid var(--stroke);
+  border-top: 1px solid var(--line-on-surface);
 }
 
 .user {
@@ -306,7 +288,7 @@ p {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: var(--color-lavender);
+  background: var(--accent);
   color: var(--ink);
   display: grid;
   place-items: center;
@@ -315,7 +297,7 @@ p {
 }
 
 .user-name {
-  font-weight: 600;
+  font-weight: 650;
   overflow-wrap: anywhere;
 }
 
@@ -332,7 +314,7 @@ p {
   gap: 12px 20px;
   padding-bottom: 28px;
   margin-bottom: 28px;
-  border-bottom: 1px solid var(--stroke);
+  border-bottom: 1px solid var(--line-on-canvas);
 }
 
 .page-header-text {
@@ -342,12 +324,14 @@ p {
 }
 
 .page-header h1 {
+  font-size: 1.625rem;
+  letter-spacing: -0.02em;
   overflow-wrap: anywhere;
 }
 
 .page-meta {
-  color: var(--muted);
   font-size: 0.8125rem;
+  font-weight: 400;
 }
 
 .page-actions {
@@ -359,7 +343,7 @@ p {
 
 .crumb {
   font-size: 0.8125rem;
-  color: var(--muted);
+  font-weight: 400;
 }
 
 /* --- Controls ------------------------------------------------------------------------- */
@@ -370,38 +354,38 @@ p {
   gap: 8px;
   min-height: 40px;
   padding: 0 16px;
-  border: 1px solid var(--control-border);
+  border: 1px solid var(--color-lavender);
   border-radius: var(--radius-control);
-  background: var(--surface);
+  background: var(--color-lavender-white);
   color: var(--text);
   font: inherit;
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
   text-decoration: none;
-  transition:
-    transform 160ms var(--ease-out),
-    background-color 150ms ease,
-    border-color 150ms ease;
+  /* Only movement animates: a colour transition passes through blends outside the palette. */
+  transition: transform 160ms var(--ease-out);
 }
 
 .btn:active:not(:disabled) {
   transform: scale(0.97);
 }
 
+/* Disabled: flat (no surface of its own) and dashed, plus the not-allowed cursor. */
 .btn:disabled {
-  opacity: 0.5;
+  background: transparent;
+  border-style: dashed;
+  font-weight: 450;
   cursor: not-allowed;
 }
 
 .btn-primary {
-  background: var(--primary-bg);
-  border-color: transparent;
-  color: var(--primary-text);
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 .btn-danger {
-  border-color: var(--text);
+  border-width: 2px;
 }
 
 .btn-ghost {
@@ -418,15 +402,15 @@ p {
 
 @media (hover: hover) and (pointer: fine) {
   .btn:hover:not(:disabled) {
-    border-color: var(--text);
+    background: var(--accent);
+    border-color: var(--accent);
   }
   .btn-primary:hover:not(:disabled) {
-    border-color: transparent;
-    background: color-mix(in srgb, var(--color-mint) 82%, var(--ink));
+    box-shadow: 0 0 0 4px var(--color-lavender);
   }
   .btn-ghost:hover:not(:disabled) {
+    background: var(--canvas);
     border-color: transparent;
-    background: var(--surface-2);
   }
 }
 
@@ -435,9 +419,10 @@ p {
   border: 0;
   padding: 0;
   font: inherit;
-  font-weight: 600;
+  font-weight: 650;
   color: var(--text);
-  text-decoration: underline;
+  text-decoration: underline 1px;
+  text-underline-offset: 0.22em;
   cursor: pointer;
 }
 
@@ -445,22 +430,44 @@ label {
   font-weight: 500;
 }
 
+/* Form controls do not inherit colour by default; browsers give them black. */
+button,
+input {
+  color: inherit;
+}
+
 input[type='search'],
 input[type='text'] {
   font: inherit;
   color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--control-border);
+  background: var(--color-lavender-white);
+  border: 1px solid var(--color-lavender);
   border-radius: var(--radius-control);
   min-height: 42px;
   padding: 0 14px;
   width: 100%;
 }
 
+/* A drawn checkbox: browsers otherwise paint their own blue or grey. */
 input[type='checkbox'] {
-  accent-color: var(--ink);
-  width: 16px;
-  height: 16px;
+  appearance: none;
+  flex: none;
+  display: inline-grid;
+  place-content: center;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border-radius: 5px;
+  background: var(--color-lavender-white);
+  box-shadow: inset 0 0 0 1px var(--color-lavender);
+  cursor: pointer;
+}
+
+input[type='checkbox']:checked {
+  background: var(--accent)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3.5 8.5 3 3 6-7' fill='none' stroke='%23151e23' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / 14px no-repeat;
+  box-shadow: none;
 }
 
 .field {
@@ -468,7 +475,7 @@ input[type='checkbox'] {
   gap: 6px;
 }
 
-/* Filter pills (Figma: "Timeframe: All-time" row, 16px medium, white, fully rounded) */
+/* Filter pills ("State: Open") on the canvas */
 .filters {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -488,20 +495,25 @@ input[type='checkbox'] {
   width: 100%;
   min-height: 48px;
   padding: 0 16px 0 18px;
-  border: 1px solid var(--stroke);
+  border: 2px solid var(--surface);
   border-radius: var(--radius-pill);
   background: var(--surface);
   color: var(--text);
   font: inherit;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.02em;
   text-align: left;
   cursor: pointer;
 }
 
 .pill-label {
-  color: var(--muted);
+  font-weight: 400;
+}
+
+.pill:hover,
+.pill[aria-expanded='true'] {
+  border-color: var(--accent);
 }
 
 .pill[aria-expanded='true'] svg {
@@ -526,9 +538,9 @@ label.pill {
   list-style: none;
   margin: 0;
   padding: 8px;
-  background: var(--surface);
-  border: 1px solid var(--stroke);
-  border-radius: 14px;
+  background: var(--color-lavender-white);
+  border: 2px solid var(--color-lavender);
+  border-radius: 16px;
   box-shadow: var(--shadow-menu);
   transform-origin: top center;
 }
@@ -544,17 +556,16 @@ label.pill {
 }
 
 .menu [role='option'][data-active='true'] {
-  background: var(--surface-2);
+  background: var(--color-lavender);
 }
 
 .menu [role='option'][aria-selected='true'] {
-  font-weight: 600;
+  font-weight: 650;
 }
 
 /* --- Cards and dashboard grid --------------------------------------------------------- */
 .card {
   background: var(--surface);
-  border: 1px solid var(--stroke);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-tile);
   padding: 20px 24px;
@@ -568,14 +579,15 @@ label.pill {
   gap: 12px;
   padding-bottom: 14px;
   margin-bottom: 18px;
-  border-bottom: 1px solid var(--stroke);
+  border-bottom: 1px solid var(--line-on-surface);
 }
 
+/* Card titles as small caps labels: hierarchy by size, weight and tracking. */
 .card-title {
-  color: var(--muted);
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .card-head .card-title {
@@ -621,10 +633,14 @@ label.pill {
   padding: 18px;
 }
 
+/* The headline statistic gets the palette gradient. */
+.kpi-feature {
+  background: linear-gradient(145deg, var(--color-lavender) 35%, var(--color-mint));
+}
+
 .kpi dt {
-  color: var(--muted);
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.8125rem;
+  font-weight: 450;
 }
 
 .kpi dd {
@@ -635,20 +651,20 @@ label.pill {
 }
 
 .kpi-value {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.75rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
   line-height: 1;
 }
 
 .kpi-suffix {
-  color: var(--muted);
   font-size: 1.0625rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .kpi-note {
-  color: var(--muted);
   font-size: 0.75rem;
+  font-weight: 400;
 }
 
 .grid-2 {
@@ -661,7 +677,7 @@ label.pill {
   grid-column: 1 / -1;
 }
 
-/* Activity bars (Figma "Activity": rounded bars on a full-height pale track) */
+/* Activity bars: mint marks on canvas-coloured tracks inside the card */
 .bars {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -672,8 +688,8 @@ label.pill {
   display: grid;
   align-content: space-between;
   height: 200px;
-  color: var(--muted);
   font-size: 0.6875rem;
+  font-weight: 400;
   text-align: right;
 }
 
@@ -695,16 +711,17 @@ label.pill {
   position: relative;
   display: flex;
   align-items: flex-end;
-  width: 10px;
+  width: 12px;
   height: 200px;
   border-radius: var(--radius-pill);
-  background: var(--track);
+  /* Outline, not fill: mint is as light as #EEF0FF, so marks go directly on the lavender card. */
+  box-shadow: inset 0 0 0 1px var(--color-lavender-white);
 }
 
 .bar {
   width: 100%;
   border-radius: var(--radius-pill);
-  background: var(--bar);
+  background: var(--accent);
   transform-origin: bottom;
 }
 
@@ -713,11 +730,11 @@ label.pill {
   bottom: calc(100% + 6px);
   left: 50%;
   translate: -50% 0;
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: var(--ink);
-  color: var(--white);
+  padding: 3px 9px;
+  border-radius: 8px;
+  background: var(--accent);
   font-size: 0.6875rem;
+  font-weight: 600;
   white-space: nowrap;
   pointer-events: none;
   display: none; /* out of layout until hovered, so it never widens the page */
@@ -728,8 +745,8 @@ label.pill {
 }
 
 .bar-label {
-  color: var(--muted);
   font-size: 0.6875rem;
+  font-weight: 450;
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
@@ -739,7 +756,7 @@ label.pill {
   gap: 2px;
   padding: 3px;
   border-radius: var(--radius-pill);
-  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--color-lavender-white);
 }
 
 .segmented button {
@@ -748,20 +765,19 @@ label.pill {
   border: 0;
   border-radius: var(--radius-pill);
   background: transparent;
-  color: var(--muted);
+  color: var(--text);
   font: inherit;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 450;
   cursor: pointer;
 }
 
 .segmented button[aria-pressed='true'] {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+  background: var(--accent);
+  font-weight: 650;
 }
 
-/* Meters (Figma "Weakest/Strongest Topics" progress rows) */
+/* Meters: mint fill on a canvas-coloured track */
 .meters {
   display: grid;
   gap: 18px;
@@ -783,37 +799,28 @@ label.pill {
 
 .meter-track {
   grid-column: 1;
-  height: 8px;
+  height: 10px;
   border-radius: var(--radius-pill);
-  background: var(--track);
+  box-shadow: inset 0 0 0 1px var(--color-lavender-white);
   overflow: hidden;
 }
 
 .meter-fill {
   height: 100%;
   border-radius: var(--radius-pill);
-  background: var(--bar);
+  background: var(--accent);
   transform-origin: left;
-}
-
-.meter-fill-good {
-  background: var(--color-mint);
-  box-shadow: inset 0 0 0 1px rgb(21 30 35 / 0.18);
 }
 
 .meter-value {
   grid-column: 2;
   grid-row: 1 / span 2;
   align-self: center;
-  font-weight: 600;
+  font-weight: 650;
   white-space: nowrap;
 }
 
-.meter-value .muted {
-  font-weight: 500;
-}
-
-/* Ranked lists (Figma "User Leaderboard") */
+/* Ranked lists (leaderboard rows) */
 .rank-list {
   list-style: none;
   margin: 0;
@@ -829,38 +836,30 @@ label.pill {
 }
 
 .rank-list li + li {
-  border-top: 1px solid var(--stroke);
+  border-top: 1px solid var(--line-on-surface);
 }
 
 .rank-main {
   display: grid;
-  gap: 4px;
+  gap: 5px;
   min-width: 0;
   flex: 1;
 }
 
 .rank-main strong {
-  font-weight: 600;
+  font-weight: 650;
   overflow-wrap: anywhere;
 }
 
 .rank-no {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .big-number {
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: 750;
   line-height: 1;
-}
-
-.muted {
-  color: var(--muted);
-}
-
-.small {
-  font-size: 0.8125rem;
 }
 
 .stack {
@@ -879,103 +878,119 @@ label.pill {
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   padding: 3px 10px;
   border-radius: var(--radius-pill);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 650;
   white-space: nowrap;
-  background: var(--surface-2);
+  background: var(--color-lavender-white);
   color: var(--text);
-  border: 1px solid var(--stroke);
+  box-shadow: inset 0 0 0 1px var(--color-lavender);
 }
 
-.badge-low,
-.badge-mint {
-  background: var(--color-mint);
-  color: var(--ink);
-  border-color: transparent;
+.badge-mint,
+.badge-low {
+  background: var(--accent);
+  box-shadow: none;
 }
 
-.badge-medium,
 .badge-lavender {
   background: var(--color-lavender);
-  color: var(--ink);
-  border-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--color-lavender-white);
+}
+
+/* Risk levels: a shape marker plus the level text, since colour cannot carry them here. */
+.badge-medium {
+  box-shadow: inset 0 0 0 2px var(--accent);
 }
 
 .badge-high {
-  background: var(--ink);
-  color: var(--white);
-  border-color: transparent;
+  background: var(--color-lavender);
+  box-shadow: inset 0 0 0 2px var(--accent);
+  font-weight: 800;
 }
 
-@media (prefers-color-scheme: dark) {
-  .badge-high {
-    background: var(--color-periwinkle);
-    color: var(--ink);
-    box-shadow: inset 0 0 0 2px var(--color-mint);
-  }
+.badge-low::before {
+  content: '●' / ''; /* decorative: screen readers read the level text */
+  font-size: 0.7em;
+}
+
+.badge-medium::before {
+  content: '◆' / '';
+  font-size: 0.75em;
+}
+
+.badge-high::before {
+  content: '▲' / '';
+  font-size: 0.75em;
 }
 
 .notice {
-  border: 1px solid var(--stroke);
-  background: var(--surface);
+  background: var(--color-lavender-white);
+  box-shadow: inset 0 0 0 1px var(--color-lavender);
   border-radius: 14px;
   padding: 12px 16px;
 }
 
 .notice-warn {
-  background: var(--color-lavender);
-  border-color: transparent;
-  color: var(--ink);
+  background: var(--accent);
+  box-shadow: none;
 }
 
 .notice-error {
-  border: 1px solid var(--text);
+  background: var(--accent);
+  box-shadow: none;
+  font-weight: 600;
 }
 
 .notice-error::before,
 .error-text::before {
   content: '! ';
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .error-text {
-  color: var(--text);
-  font-weight: 600;
+  font-weight: 650;
 }
 
 .empty {
   padding: 28px 8px;
   text-align: center;
-  color: var(--muted);
+  font-weight: 400;
 }
 
 .empty .btn {
   margin-top: 14px;
 }
 
-/* Static skeleton blocks; the pulse is opt-in for users who did not ask for less motion. */
+/* Skeletons: a palette shimmer; static for users who asked for less motion. */
 .skeleton {
   display: block;
-  background: var(--surface-2);
+  background: var(--color-lavender-white);
   border-radius: 14px;
   min-height: 1em;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .skeleton {
-    animation: pulse 1.4s ease-in-out infinite;
+    background: linear-gradient(
+        100deg,
+        var(--color-lavender-white) 30%,
+        var(--color-lavender) 50%,
+        var(--color-lavender-white) 70%
+      )
+      0 0 / 300% 100%;
+    animation: shimmer 1.6s linear infinite;
   }
-  @keyframes pulse {
-    50% {
-      opacity: 0.55;
+  @keyframes shimmer {
+    to {
+      background-position: -150% 0;
     }
   }
 }
 
-/* --- Tables (inside cards, Figma leaderboard rhythm: 66px rows, 24px inset) ------------ */
+/* --- Tables (inside cards: 66px rows, 24px inset) ---------------------------------- */
 .table-card {
   padding: 6px 0;
   overflow-x: auto;
@@ -996,21 +1011,20 @@ td {
 th {
   padding-top: 12px;
   padding-bottom: 12px;
-  color: var(--muted);
   font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
 tbody td {
-  border-top: 1px solid var(--stroke);
+  border-top: 1px solid var(--line-on-surface);
 }
 
 @media (hover: hover) and (pointer: fine) {
   tbody tr:hover td {
-    background: color-mix(in srgb, var(--surface-2) 55%, transparent);
+    background: var(--color-lavender-white);
   }
 }
 
@@ -1032,11 +1046,11 @@ th.num {
 }
 
 .title-cell a {
-  text-decoration-color: transparent;
+  text-decoration-line: none;
 }
 
 .title-cell a:hover {
-  text-decoration-color: currentColor;
+  text-decoration-line: underline;
 }
 
 .pagination {
@@ -1046,8 +1060,8 @@ th.num {
   justify-content: space-between;
   gap: 12px;
   margin-top: 16px;
-  color: var(--muted);
   font-size: 0.8125rem;
+  font-weight: 400;
 }
 
 /* Below 640px, data tables become stacked label/value rows (no page-level horizontal scroll). */
@@ -1064,7 +1078,7 @@ th.num {
     padding: 10px 0;
   }
   .stacked tbody tr + tr {
-    border-top: 1px solid var(--stroke);
+    border-top: 1px solid var(--line-on-surface);
   }
   .stacked tbody td {
     border-top: 0;
@@ -1078,8 +1092,8 @@ th.num {
   }
   .stacked td::before {
     content: attr(data-label);
-    color: var(--muted);
     font-size: 0.75rem;
+    font-weight: 400;
     text-align: left;
   }
   .stacked td.title-cell {
@@ -1092,7 +1106,7 @@ th.num {
   }
 }
 
-/* --- Heatmap -------------------------------------------------------------------------- */
+/* --- Heatmap: intensity is the size of the mint square in each cell ------------------ */
 .heatmap-scroll {
   overflow-x: auto;
   padding-bottom: 4px;
@@ -1100,29 +1114,39 @@ th.num {
 
 .heatmap {
   display: grid;
-  grid-template-rows: repeat(7, 11px);
+  grid-template-rows: repeat(7, 12px);
   grid-auto-flow: column;
-  grid-auto-columns: 11px;
+  grid-auto-columns: 12px;
   gap: 3px;
   width: max-content;
 }
 
 .heat {
+  position: relative;
+  display: inline-block;
   border-radius: 3px;
-  background: var(--heat-0);
+  box-shadow: inset 0 0 0 1px var(--color-lavender-white);
 }
 
-.heat-1 {
-  background: var(--heat-1);
+.heat::after {
+  content: '';
+  position: absolute;
+  inset: 50%;
+  border-radius: 2px;
+  background: var(--accent);
 }
-.heat-2 {
-  background: var(--heat-2);
+
+.heat-1::after {
+  inset: 4px;
 }
-.heat-3 {
-  background: var(--heat-3);
+.heat-2::after {
+  inset: 3px;
 }
-.heat-4 {
-  background: var(--heat-4);
+.heat-3::after {
+  inset: 1.5px;
+}
+.heat-4::after {
+  inset: 0;
 }
 
 .legend {
@@ -1130,19 +1154,19 @@ th.num {
   align-items: center;
   gap: 3px;
   font-size: 0.75rem;
-  color: var(--muted);
+  font-weight: 400;
 }
 
 .legend .heat {
-  width: 11px;
-  height: 11px;
+  width: 12px;
+  height: 12px;
 }
 
-/* --- Dialog --------------------------------------------------------------------------- */
+/* --- Dialog: an opaque canvas backdrop instead of a translucent shade ------------------ */
 dialog {
   width: min(560px, calc(100vw - 32px));
   max-height: calc(100dvh - 64px);
-  border: 1px solid var(--stroke);
+  border: 0;
   border-radius: var(--radius-card);
   background: var(--surface);
   color: var(--text);
@@ -1151,7 +1175,7 @@ dialog {
 }
 
 dialog::backdrop {
-  background: var(--backdrop);
+  background: var(--color-lavender-white);
 }
 
 .dialog-head {
@@ -1180,7 +1204,7 @@ dialog::backdrop {
 }
 
 .picker li + li {
-  border-top: 1px solid var(--stroke);
+  border-top: 1px solid var(--line-on-surface);
 }
 
 .picker .name {
@@ -1198,12 +1222,18 @@ dialog::backdrop {
   }
 }
 
-/* --- Login, not found and prose ------------------------------------------------------- */
+/* --- Login and prose --------------------------------------------------------------------- */
 .login {
   min-height: 100dvh;
   display: grid;
   place-items: center;
   padding: 24px 16px;
+  background: linear-gradient(
+    160deg,
+    var(--color-lavender-white) 45%,
+    var(--color-lavender) 80%,
+    var(--color-mint)
+  );
 }
 
 .login-card {
@@ -1248,7 +1278,7 @@ dialog::backdrop {
 
 .prose th,
 .prose td {
-  border: 1px solid var(--stroke);
+  border: 1px solid var(--line-on-surface);
   padding: 6px 12px;
   text-transform: none;
   letter-spacing: 0;
@@ -1264,7 +1294,7 @@ dialog::backdrop {
 }
 
 .sources li + li {
-  border-top: 1px solid var(--stroke);
+  border-top: 1px solid var(--line-on-surface);
   padding-top: 12px;
 }
 

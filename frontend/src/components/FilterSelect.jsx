@@ -82,9 +82,9 @@ export function FilterSelect({ label, value, options, onChange }) {
             role="listbox"
             aria-label={label}
             className="menu"
-            initial={{ opacity: 0, scale: 0.97, y: -4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97, y: -4, transition: { duration: 0.12 } }}
+            initial={{ scale: 0.97, y: -4 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.97, y: -4, transition: { duration: 0.1 } }}
           >
             {options.map(([v, text], i) => (
               <li

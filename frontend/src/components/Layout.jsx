@@ -12,7 +12,7 @@ export function Brand() {
   return (
     <>
       <span className="brand-mark" aria-hidden="true">
-        <svg width="16" height="16" viewBox="0 0 16 16">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
           <path d="M6 2h4v4h4v4h-4v4H6v-4H2V6h4z" fill="currentColor" />
         </svg>
       </span>
@@ -228,12 +228,8 @@ export function AppShell() {
       <div className="app">
         <Sidebar me={me.data} onSignOut={signOut} signingOut={logout.isPending} />
         <main id="main" className="content">
-          {/* A short fade-and-rise as each page arrives; query-string changes keep the page. */}
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          {/* A short rise as each page arrives (no fade: a fade blends colours off the palette). */}
+          <motion.div key={location.pathname} initial={{ y: 8 }} animate={{ y: 0 }}>
             <PageErrorBoundary key={location.pathname}>
               {hasBadId(location.pathname) ? <NotFoundPage /> : <Outlet />}
             </PageErrorBoundary>

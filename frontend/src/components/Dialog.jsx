@@ -35,7 +35,7 @@ export function Dialog({ open, onClose, title, children }) {
       }}
     >
       {open && (
-        <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
+        <motion.div initial={{ scale: 0.97 }} animate={{ scale: 1 }}>
           <div className="dialog-head">
             <h2 id={titleId}>{title}</h2>
             <button type="button" className="btn btn-small" onClick={onClose}>

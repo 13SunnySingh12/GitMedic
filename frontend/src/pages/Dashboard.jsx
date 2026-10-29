@@ -48,9 +48,9 @@ export function monthlyCommits(data) {
   return rows;
 }
 
-function Kpi({ label, children }) {
+function Kpi({ label, feature, children }) {
   return (
-    <div className="card kpi">
+    <div className={`card kpi${feature ? ' kpi-feature' : ''}`}>
       <dt>{label}</dt>
       <dd>{children}</dd>
     </div>
@@ -60,7 +60,7 @@ function Kpi({ label, children }) {
 function RiskKpi({ risk }) {
   if (!risk) {
     return (
-      <Kpi label="Abandonment risk">
+      <Kpi label="Abandonment risk" feature>
         <span className="kpi-note">
           No risk score yet. It is computed after the first successful sync.
         </span>
@@ -68,7 +68,7 @@ function RiskKpi({ risk }) {
     );
   }
   return (
-    <Kpi label="Abandonment risk">
+    <Kpi label="Abandonment risk" feature>
       <span>
         <span className="kpi-value">{risk.score}</span>
         <span className="kpi-suffix">/100</span>
