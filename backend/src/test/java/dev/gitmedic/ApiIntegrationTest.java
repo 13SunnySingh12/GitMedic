@@ -17,6 +17,8 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import dev.gitmedic.analytics.AnalyticsService;
 import dev.gitmedic.auth.JwtService;
 import dev.gitmedic.auth.TokenCipher;
+import dev.gitmedic.ml.MlService;
+import dev.gitmedic.report.ReportService;
 import dev.gitmedic.support.Seed;
 import dev.gitmedic.support.TestSupport;
 import dev.gitmedic.sync.SyncStore;
@@ -25,7 +27,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -68,6 +72,8 @@ class ApiIntegrationTest {
   @Autowired JwtService jwt;
   @Autowired SyncStore store;
   @Autowired AnalyticsService analytics;
+  @Autowired MlService mlService;
+  @Autowired ReportService reports;
 
   @Autowired
   @Qualifier("applicationTaskExecutor")
@@ -402,6 +408,77 @@ class ApiIntegrationTest {
         .andExpect(jsonPath("$.totalItems").value(40));
   }
 
+  private void stubMergePredictions(double days) {
+    List<Long> ids =
+        jdbc.sql("select id from gitmedic.pull_requests where repo_id = ? and state = 'open'")
+            .param(repoId)
+            .query(Long.class)
+            .list();
+    StringBuilder json = new StringBuilder("{\"predictions\":[");
+    for (int i = 0; i < ids.size(); i++) {
+      json.append(i == 0 ? "" : ",").append("{\"id\":" + ids.get(i) + ",\"days\":" + days + "}");
+    }
+    ml.stubFor(
+        WireMock.post("/internal/v1/predict/merge-time")
+            .willReturn(WireMock.okJson(json.append("]}").toString())));
+  }
+
+  /** BR-09: the first prediction survives re-sync, re-prediction and is the one reports use. */
+  @Test
+  void firstMergePredictionIsFrozenThroughSyncRetrainAndReports() {
+    stubMergePredictions(4.0);
+    mlService.predictMergeTimes(repoId);
+    Instant firstAt =
+        jdbc.sql(
+                "select predicted_at from gitmedic.pull_requests where repo_id = ? and number = 40")
+            .param(repoId)
+            .query(java.sql.Timestamp.class)
+            .single()
+            .toInstant();
+
+    // A re-sync upserts the PR again, then a retrained model predicts something else.
+    store.upsertPull(repoId, TestSupport.fixture("pull_details.json").get("40"), null);
+    stubMergePredictions(9.0);
+    mlService.predictMergeTimes(repoId);
+
+    Map<String, Object> pr =
+        jdbc.sql(
+                "select predicted_merge_days, latest_predicted_merge_days, predicted_at"
+                    + " from gitmedic.pull_requests where repo_id = ? and number = 40")
+            .param(repoId)
+            .query()
+            .singleRow();
+    assertThat(((Number) pr.get("predicted_merge_days")).doubleValue()).isEqualTo(4.0);
+    assertThat(((Number) pr.get("latest_predicted_merge_days")).doubleValue()).isEqualTo(9.0);
+    assertThat(((java.sql.Timestamp) pr.get("predicted_at")).toInstant()).isEqualTo(firstAt);
+
+    // Merged two days after opening, inside a report period: the report compares with 4, not 9.
+    Instant start = Instant.parse("2026-10-12T00:00:00Z");
+    jdbc.sql(
+            "update gitmedic.pull_requests set state = 'closed', created_at_gh = ?,"
+                + " merged_at_gh = ? where repo_id = ? and number = 40")
+        .params(
+            java.sql.Timestamp.from(start.minusSeconds(86_400)),
+            java.sql.Timestamp.from(start.plusSeconds(86_400)),
+            repoId)
+        .update();
+    long reportId =
+        reports.generate(
+            repoId,
+            new ReportService.Period(start, start.plusSeconds(7 * 86_400).minusNanos(1000)));
+    JsonNode prs =
+        TestSupport.JSON
+            .readTree(
+                jdbc.sql("select metrics::text from gitmedic.weekly_reports where id = ?")
+                    .param(reportId)
+                    .query(String.class)
+                    .single())
+            .path("pullRequests");
+    assertThat(prs.path("merged").asInt()).isEqualTo(1);
+    assertThat(prs.path("avgMergeDaysActual").asDouble()).isEqualTo(2.0);
+    assertThat(prs.path("avgMergeDaysPredicted").asDouble()).isEqualTo(4.0);
+  }
+
   // --- Training ---------------------------------------------------------------------------
 
   private MockHttpServletRequestBuilder train(String model) {
@@ -438,6 +515,46 @@ class ApiIntegrationTest {
         .andExpect(status().isUnprocessableContent())
         .andExpect(jsonPath("$.code").value("INSUFFICIENT_TRAINING_DATA"));
     mvc.perform(train("nonsense")).andExpect(status().isNotFound());
+  }
+
+  @Test
+  void mlRequestsStayUnderFastApisTwoMegabyteLimit() {
+    // Long non-ASCII issue bodies (3 bytes per char in UTF-8) and 200 KiB documents.
+    jdbc.sql("update gitmedic.issues set state = 'open', body = ? where repo_id = ?")
+        .params("あ".repeat(60_000), repoId)
+        .update();
+    long open = count("select count(*) from gitmedic.issues where repo_id = ?", repoId);
+    ml.stubFor(
+        WireMock.post("/internal/v1/predict/label")
+            .willReturn(WireMock.okJson("{\"predictions\":[]}")));
+    List<MlService.Document> docs = new ArrayList<>();
+    for (int i = 0; i < 6; i++) {
+      docs.add(new MlService.Document("doc", "docs/" + i + ".md", "u", "あ".repeat(200 * 1024)));
+    }
+
+    mlService.predictLabels(repoId, true);
+    mlService.index(repoId, docs);
+
+    int sent = 0;
+    for (var r : ml.findAll(postRequestedFor(urlPathEqualTo("/internal/v1/predict/label")))) {
+      assertThat(r.getBody().length).isLessThanOrEqualTo(2 * 1024 * 1024);
+      for (JsonNode issue : TestSupport.JSON.readTree(r.getBody()).path("issues")) {
+        assertThat(issue.path("body").asString().length()).isLessThanOrEqualTo(8000);
+        sent++;
+      }
+    }
+    assertThat(sent).isEqualTo(open);
+    int indexed = 0;
+    for (var r : ml.findAll(postRequestedFor(urlPathEqualTo("/internal/v1/index")))) {
+      assertThat(r.getBody().length).isLessThanOrEqualTo(2 * 1024 * 1024);
+      indexed += TestSupport.JSON.readTree(r.getBody()).path("documents").size();
+    }
+    assertThat(indexed).isEqualTo(docs.size());
+
+    // GitHub allows 65,536-character bodies; FastAPI caps them at 65,535 and only reads 1,500.
+    mlService.duplicates(repoId, 1, "t", "x".repeat(65_536));
+    var dup = ml.findAll(postRequestedFor(urlPathEqualTo("/internal/v1/duplicates"))).getLast();
+    assertThat(TestSupport.JSON.readTree(dup.getBody()).path("body").asString()).hasSize(1500);
   }
 
   @Test

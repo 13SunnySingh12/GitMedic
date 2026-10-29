@@ -25,8 +25,14 @@ public class MlService {
   private static final Logger log = LoggerFactory.getLogger(MlService.class);
   private static final int PREDICT_BATCH = 500;
 
-  /** Keeps each /index request under FastAPI's 2 MB body limit with headroom for JSON overhead. */
-  private static final int INDEX_BATCH_CHARS = 1_200_000;
+  /** Serialized JSON per request, under FastAPI's 2 MB body limit with headroom (§7.2). */
+  private static final int BATCH_BYTES = 1_500_000;
+
+  /** The label model reads at most 8,000 characters of title + body; the rest is not sent. */
+  private static final int LABEL_BODY_CHARS = 8000;
+
+  /** Duplicate search and answers embed title + the first 1,500 body characters (§5.8). */
+  private static final int QUERY_BODY_CHARS = 1500;
 
   public record Document(String source_type, String source_ref, String source_url, String text) {}
 
@@ -50,30 +56,44 @@ public class MlService {
   public int[] index(long repoId, List<Document> docs) {
     int upserted = 0;
     int skipped = 0;
-    List<Document> batch = new ArrayList<>();
-    int chars = 0;
-    for (Document d : docs) {
-      if (!batch.isEmpty() && chars + d.text().length() > INDEX_BATCH_CHARS) {
-        int[] r = indexBatch(repoId, batch);
-        upserted += r[0];
-        skipped += r[1];
-        batch = new ArrayList<>();
-        chars = 0;
-      }
-      batch.add(d);
-      chars += d.text().length() + d.source_url().length();
-    }
-    if (!batch.isEmpty()) {
-      int[] r = indexBatch(repoId, batch);
-      upserted += r[0];
-      skipped += r[1];
+    for (List<Document> batch : batches(docs, Integer.MAX_VALUE)) {
+      JsonNode r = ml.postSlow("/internal/v1/index", Map.of("repo_id", repoId, "documents", batch));
+      upserted += r.path("chunks_upserted").asInt();
+      skipped += r.path("chunks_skipped").asInt();
     }
     return new int[] {upserted, skipped};
   }
 
-  private int[] indexBatch(long repoId, List<Document> batch) {
-    JsonNode r = ml.postSlow("/internal/v1/index", Map.of("repo_id", repoId, "documents", batch));
-    return new int[] {r.path("chunks_upserted").asInt(), r.path("chunks_skipped").asInt()};
+  /**
+   * Splits items into batches of at most {@code maxItems} whose JSON stays under BATCH_BYTES.
+   * Measured in UTF-8 bytes, since non-ASCII text takes up to 3 bytes per character.
+   */
+  private <T> List<List<T>> batches(List<T> items, int maxItems) {
+    List<List<T>> out = new ArrayList<>();
+    List<T> batch = new ArrayList<>();
+    long bytes = 0;
+    for (T item : items) {
+      int size = mapper.writeValueAsBytes(item).length + 1;
+      if (!batch.isEmpty() && (batch.size() == maxItems || bytes + size > BATCH_BYTES)) {
+        out.add(batch);
+        batch = new ArrayList<>();
+        bytes = 0;
+      }
+      batch.add(item);
+      bytes += size;
+    }
+    if (!batch.isEmpty()) {
+      out.add(batch);
+    }
+    return out;
+  }
+
+  /** The first {@code max} characters, never splitting a surrogate pair (emoji etc.). */
+  static String head(String s, int max) {
+    if (s == null || s.length() <= max) {
+      return s;
+    }
+    return s.substring(0, Character.isHighSurrogate(s.charAt(max - 1)) ? max - 1 : max);
   }
 
   /** Issues whose embedding is missing or older than their last GitHub update (self-healing). */
@@ -102,7 +122,7 @@ public class MlService {
     if (body == null || body.isBlank()) {
       return title;
     }
-    return title + "\n" + body.substring(0, Math.min(body.length(), 1500));
+    return title + "\n" + head(body, QUERY_BODY_CHARS);
   }
 
   /**
@@ -124,13 +144,11 @@ public class MlService {
                       "title",
                       rs.getString("title"),
                       "body",
-                      body == null ? "" : body);
+                      body == null ? "" : head(body, LABEL_BODY_CHARS));
                 })
             .list();
     Instant now = clock.instant();
-    for (int from = 0; from < issues.size(); from += PREDICT_BATCH) {
-      List<Map<String, Object>> batch =
-          issues.subList(from, Math.min(issues.size(), from + PREDICT_BATCH));
+    for (List<Map<String, Object>> batch : batches(issues, PREDICT_BATCH)) {
       JsonNode r;
       try {
         r = ml.post("/internal/v1/predict/label", Map.of("repo_id", repoId, "issues", batch));
@@ -194,7 +212,7 @@ public class MlService {
     req.put("repo_id", repoId);
     req.put("issue_number", number);
     req.put("title", title);
-    req.put("body", body);
+    req.put("body", head(body, QUERY_BODY_CHARS));
     return ml.post("/internal/v1/duplicates", req);
   }
 
@@ -203,7 +221,7 @@ public class MlService {
     req.put("repo_id", repoId);
     req.put("issue_number", number);
     req.put("title", title);
-    req.put("body", body);
+    req.put("body", head(body, QUERY_BODY_CHARS));
     req.put("use_llm", useLlm);
     return ml.post("/internal/v1/suggest", req);
   }
