@@ -1,6 +1,10 @@
 """ML-07 … ML-09: indexing idempotency, duplicate search, retrieval-only suggestions."""
 
-from tests.conftest import fixture, load_issues, make_repo
+import pytest
+
+from app.db.pool import vector_literal
+from app.rag import search
+from tests.conftest import FakeEmbedder, fixture, load_issues, make_repo
 
 
 def _issue_docs(issues):
@@ -131,3 +135,40 @@ def test_index_accepts_a_document_at_the_200_kib_doc_cap(client, db):
     too_big = {**doc, "text": "x" * (200 * 1024 + 1)}
     r = client.post("/internal/v1/index", json={"repo_id": repo, "documents": [too_big]})
     assert r.status_code == 400
+
+
+def _store_vector(db, repo: int, number: int, a: float) -> None:
+    """Issue chunk whose cosine with the unit vector e0 is exactly `a` (v = a·e0 + √(1−a²)·e1)."""
+    v = [0.0] * 384
+    v[0], v[1] = a, (1 - a * a) ** 0.5
+    db.execute(
+        "insert into gitmedic.embeddings (repo_id, source_type, source_ref, source_url,"
+        " chunk_index, content, content_hash, embedding)"
+        " values (%s, 'issue', %s, 'u', 0, 't', 'h', %s::extensions.vector)",
+        (repo, str(number), vector_literal(v)),
+    )
+
+
+def test_duplicate_scores_are_cosine_ranked_repo_scoped_and_thresholded(client, db):
+    repo, other = make_repo(db), make_repo(db, github_repo_id=999)
+    _store_vector(db, repo, 1, 1.0)  # the issue being checked: its own vector is e0
+    for number, cos in ((2, 0.9), (3, 0.5), (4, 0.79)):
+        _store_vector(db, repo, number, cos)
+    _store_vector(db, other, 2, 1.0)  # identical text in another repo must never match
+    q = {"repo_id": repo, "issue_number": 1, "title": "t", "body": None}
+
+    body = client.post("/internal/v1/duplicates", json=q).json()
+    assert [m["issue_number"] for m in body["matches"]] == [2, 4, 3]  # self excluded
+    assert [round(m["score"], 4) for m in body["matches"]] == [0.9, 0.79, 0.5]
+    assert body["is_possible_duplicate"] is True  # 0.9 ≥ 0.80
+
+    db.execute("delete from gitmedic.embeddings where repo_id = %s and source_ref = '2'", (repo,))
+    body = client.post("/internal/v1/duplicates", json=q).json()
+    assert body["top_score"] == pytest.approx(0.79, abs=1e-4)
+    assert body["is_possible_duplicate"] is False  # 0.79 < 0.80
+
+    # The comparison is ≥: a top score exactly at the threshold flags the issue.
+    top = body["top_score"]
+    at = search.duplicates(repo, 1, "t", None, 5, top, FakeEmbedder())
+    above = search.duplicates(repo, 1, "t", None, 5, top + 1e-6, FakeEmbedder())
+    assert (at["is_possible_duplicate"], above["is_possible_duplicate"]) == (True, False)

@@ -18,6 +18,7 @@ import dev.gitmedic.analytics.AnalyticsService;
 import dev.gitmedic.auth.JwtService;
 import dev.gitmedic.auth.TokenCipher;
 import dev.gitmedic.ml.MlService;
+import dev.gitmedic.report.ReportService;
 import dev.gitmedic.support.Seed;
 import dev.gitmedic.support.TestSupport;
 import dev.gitmedic.sync.SyncStore;
@@ -72,6 +73,7 @@ class ApiIntegrationTest {
   @Autowired SyncStore store;
   @Autowired AnalyticsService analytics;
   @Autowired MlService mlService;
+  @Autowired ReportService reports;
 
   @Autowired
   @Qualifier("applicationTaskExecutor")
@@ -404,6 +406,77 @@ class ApiIntegrationTest {
         .andExpect(jsonPath("$.items[?(@.number == 40)].firstPredictedMergeDays").value(2.5));
     mvc.perform(get(base() + "/pulls").param("state", "all").cookie(cookie))
         .andExpect(jsonPath("$.totalItems").value(40));
+  }
+
+  private void stubMergePredictions(double days) {
+    List<Long> ids =
+        jdbc.sql("select id from gitmedic.pull_requests where repo_id = ? and state = 'open'")
+            .param(repoId)
+            .query(Long.class)
+            .list();
+    StringBuilder json = new StringBuilder("{\"predictions\":[");
+    for (int i = 0; i < ids.size(); i++) {
+      json.append(i == 0 ? "" : ",").append("{\"id\":" + ids.get(i) + ",\"days\":" + days + "}");
+    }
+    ml.stubFor(
+        WireMock.post("/internal/v1/predict/merge-time")
+            .willReturn(WireMock.okJson(json.append("]}").toString())));
+  }
+
+  /** BR-09: the first prediction survives re-sync, re-prediction and is the one reports use. */
+  @Test
+  void firstMergePredictionIsFrozenThroughSyncRetrainAndReports() {
+    stubMergePredictions(4.0);
+    mlService.predictMergeTimes(repoId);
+    Instant firstAt =
+        jdbc.sql(
+                "select predicted_at from gitmedic.pull_requests where repo_id = ? and number = 40")
+            .param(repoId)
+            .query(java.sql.Timestamp.class)
+            .single()
+            .toInstant();
+
+    // A re-sync upserts the PR again, then a retrained model predicts something else.
+    store.upsertPull(repoId, TestSupport.fixture("pull_details.json").get("40"), null);
+    stubMergePredictions(9.0);
+    mlService.predictMergeTimes(repoId);
+
+    Map<String, Object> pr =
+        jdbc.sql(
+                "select predicted_merge_days, latest_predicted_merge_days, predicted_at"
+                    + " from gitmedic.pull_requests where repo_id = ? and number = 40")
+            .param(repoId)
+            .query()
+            .singleRow();
+    assertThat(((Number) pr.get("predicted_merge_days")).doubleValue()).isEqualTo(4.0);
+    assertThat(((Number) pr.get("latest_predicted_merge_days")).doubleValue()).isEqualTo(9.0);
+    assertThat(((java.sql.Timestamp) pr.get("predicted_at")).toInstant()).isEqualTo(firstAt);
+
+    // Merged two days after opening, inside a report period: the report compares with 4, not 9.
+    Instant start = Instant.parse("2026-10-12T00:00:00Z");
+    jdbc.sql(
+            "update gitmedic.pull_requests set state = 'closed', created_at_gh = ?,"
+                + " merged_at_gh = ? where repo_id = ? and number = 40")
+        .params(
+            java.sql.Timestamp.from(start.minusSeconds(86_400)),
+            java.sql.Timestamp.from(start.plusSeconds(86_400)),
+            repoId)
+        .update();
+    long reportId =
+        reports.generate(
+            repoId,
+            new ReportService.Period(start, start.plusSeconds(7 * 86_400).minusNanos(1000)));
+    JsonNode prs =
+        TestSupport.JSON
+            .readTree(
+                jdbc.sql("select metrics::text from gitmedic.weekly_reports where id = ?")
+                    .param(reportId)
+                    .query(String.class)
+                    .single())
+            .path("pullRequests");
+    assertThat(prs.path("merged").asInt()).isEqualTo(1);
+    assertThat(prs.path("avgMergeDaysActual").asDouble()).isEqualTo(2.0);
+    assertThat(prs.path("avgMergeDaysPredicted").asDouble()).isEqualTo(4.0);
   }
 
   // --- Training ---------------------------------------------------------------------------
