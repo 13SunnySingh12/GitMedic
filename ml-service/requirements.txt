@@ -2,8 +2,8 @@
 #   pip install torch --index-url https://download.pytorch.org/whl/cpu
 fastapi==0.162.0
 uvicorn==0.54.0
-pydantic-settings==2.16.1
-psycopg[binary]==3.3.6
+pydantic-settings==2.16.2
+psycopg[binary]==3.3.8
 psycopg-pool==3.3.3
 numpy==2.5.4
 scikit-learn==1.9.1
@@ -11,6 +11,6 @@ joblib==1.6.0
 sentence-transformers==6.2.0
 httpx==0.28.1
 # Transitive (torch, huggingface-hub): floor for CVE-2026-112907/112913/112940.
-filelock==4.2.4
+filelock==4.2.9
 # Transitive runtime dependency of torch: floor for PYSEC-2025-49, PYSEC-2026-3447, GHSA-xmj3-9gf7-h52w.
 setuptools==84.2.1
